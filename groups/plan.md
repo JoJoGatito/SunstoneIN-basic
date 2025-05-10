@@ -1,51 +1,85 @@
-# Group Pages Implementation Plan
+# Group Pages Template Update Plan
 
-## 1. File Structure
-- groups/
-  - cafeteria-collective.html
-  - rock-and-stone.html
-  - disabitch.html
-  - poc-group.html
-  - haus-of-sol.html
+## Overview
+Apply the improved events section template from the youth group page to all other group pages to ensure consistency and better organization across the site.
 
-## 2. Page Template Structure (Cafeteria Collective as template)
+## Source Template
+The improved template from `sunstone-youth-group.html` includes:
+- Structured event information with location field
+- Template comments for adding new events
+- Consistent styling and spacing
+- Better organized event card layout
 
-### Header Section
-- Group Name
-- Banner Image
+## Files to Update
+1. groups/cafeteria-collective.html
+2. groups/rock-and-stone.html
+3. groups/disabitch.html
+4. groups/poc-group.html
+5. groups/haus-of-sol.html
 
-### Main Content
-- Group Description
-- Meeting Information (Time/Location)
-- Upcoming Events Section
-  * Event Cards containing:
-    - Event Title
-    - Date/Time
-    - Description
-- Discord Invite Link
+## Implementation Steps
 
-## 3. Technical Implementation
-- Utilize Tailwind CSS (matching main page)
-- Maintain consistent branding
-- Keep accessibility features (Dyslexie font)
-- Ensure responsive design
+### 1. Event Section Structure
+Update each page's event section to include:
+```html
+<!-- 
+  UPCOMING EVENTS SECTION
+  
+  To add a new event:
+  1. Copy the event template below
+  2. Update the following information:
+     - Title: Update the text inside the h3 tags
+     - Date: Update the date span
+     - Time: Update the time span
+     - Location: Update the location span
+     - Description: Update the text in the p tag
+  3. Place newest events at the top
+  
+  Note: Keep the mb-6 class on all events except the last one
+-->
+```
 
-## 4. Key Features
-- Group description section with mission and focus
-- Meeting information display
-- Upcoming events section
-- Discord invite link
-- Navigation back to main page
+### 2. Event Card Template
+Implement the improved event card structure:
+```html
+<div class="bg-gray-900 p-6 rounded-lg mb-6">
+  <h3 class="text-xl font-bold text-yellow-500 mb-2">
+    [Event Title]
+  </h3>
+  
+  <div class="flex items-center mb-3">
+    <i class="far fa-calendar text-yellow-500 mr-2"></i>
+    <span>[Date]</span>
+    <i class="far fa-clock text-yellow-500 ml-4 mr-2"></i>
+    <span>[Time]</span>
+  </div>
+  
+  <div class="flex items-center mb-3">
+    <i class="fas fa-map-marker-alt text-yellow-500 mr-2"></i>
+    <span>[Location]</span>
+  </div>
+  
+  <p class="text-gray-300">
+    [Event Description]
+  </p>
+</div>
+```
 
-## 5. Design Elements
-- Yellow-500 color for headings (consistent with main page)
-- Black background with white text
-- Accessible font choices
-- Responsive layout for mobile and desktop
+## Implementation Strategy
+1. Use Orchestrator mode to:
+   - Create subtasks for each group page
+   - Delegate to Code mode for implementing changes
+   - Verify changes are consistent across all pages
 
-## Next Steps
-1. Create Cafeteria Collective page as template
-2. Review and test template implementation
-3. Replicate template for other groups with specific content
-4. Test responsive design and accessibility
-5. Deploy pages
+2. For each page:
+   - Update the events section structure
+   - Add template comments
+   - Implement improved event card layout
+   - Ensure consistent spacing and styling
+   - Preserve existing event data where available
+
+## Success Criteria
+- All group pages have consistent event section structure
+- Template comments are present in all files
+- Event cards include all required fields (title, date, time, location, description)
+- Styling and spacing is consistent across all pages
