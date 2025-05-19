@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://www.dyslexiefont.com/css/dyslexie.css" rel="stylesheet" type="text/css"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.js"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -33,15 +35,17 @@
     <main class="max-w-6xl mx-auto px-4">
       <section class="mb-16">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Example Event Card -->
+          <!-- Event Card Start -->
           <article class="bg-gray-900 rounded-lg overflow-hidden">
             <div class="relative">
               <div class="absolute top-4 left-4 bg-yellow-500 text-black font-bold px-3 py-2 rounded" aria-label="Event date: May 25, 2025">
                 <div class="text-sm">JUNE</div>
                 <div class="text-xl">10</div>
               </div>
-              <div class="h-48 bg-gray-800">
-                <img src="images/events/Adult-Storytime.webp" alt="Adult Storytime at the library on June 10, 2025" class="w-full h-full object-cover">
+              <div class="relative pt-[129.4%] bg-gray-800">
+                <a href="images/events/Adult-Storytime.webp" class="event-flyer">
+                  <img src="images/events/Adult-Storytime.webp" alt="Adult Storytime at the library on June 10, 2025" class="absolute inset-0 w-full h-full object-contain">
+                </a>
               </div>
             </div>
             <div class="p-6">
@@ -55,10 +59,18 @@
                 <i class="fas fa-map-marker-alt mr-2"></i>
                 <span>Rawlings Library</span>
               </div>
+              <div class="flex items-center text-gray-400 mt-2">
+                <i class="fas fa-users mr-2"></i>
+                <span>Community Focus: Queer</span>
+              </div>
+              <div class="flex items-center text-gray-400 mt-2">
+                <i class="fas fa-volume-mute mr-2"></i>
+                <span>Sensory-Friendly: Very Likely</span>
+              </div>
             </div>
           </article>
 
-          <!-- More event cards would go here -->
+          <!-- Event Card End (add more after this) -->
           
         </div>
       </section>
@@ -81,5 +93,18 @@
         </p>
       </div>
     </footer>
- </body>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        new SimpleLightbox('.event-flyer', {
+          captionPosition: 'bottom',
+          widthRatio: 0.9,
+          heightRatio: 0.9,
+          disableScroll: true,
+          closeText: '×',
+          showCounter: false
+        });
+      });
+    </script>
+  </body>
 </html>
