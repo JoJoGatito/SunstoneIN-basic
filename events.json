@@ -1,0 +1,102 @@
+{
+  "_documentation": {
+    "instructions": "This file contains events for all Sunstone groups. The first event for each group will be displayed on the home page.",
+    "how_to_add": "To add a new event: 1) Copy an existing event object, 2) Update all fields, 3) Place it at the beginning of the group's events array if it's the next upcoming event",
+    "how_to_edit": "To edit an event: Find the event by title and date, then update the necessary fields",
+    "how_to_delete": "To delete an event: Remove the entire event object (including the surrounding { } and the comma if needed)",
+    "date_format": "Use Month DD, YYYY format (e.g., 'May 20, 2025')",
+    "time_format": "Use 12-hour format with AM/PM (e.g., '5:00 PM - 7:00 PM')",
+    "event_template": {
+      "title": "Event Title Here",
+      "date": "Month DD, YYYY",
+      "time": "H:MM AM/PM - H:MM AM/PM",
+      "location": "Full address or venue name",
+      "description": "Full description of the event"
+    }
+  },
+  "groups": [
+    {
+      "id": "sunstone-youth-group",
+      "name": "Sunstone Youth Group (SYG)",
+      "page": "groups/sunstone-youth-group.html",
+      "events": [
+        {
+          "_comment": "Current SYG event shown on home page",
+          "title": "Tea and Crafts Afternoon",
+          "date": "May 20, 2025",
+          "time": "5:00 PM - 7:00 PM",
+          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
+          "description": "Bring your favorite crafts—crochet, painting, drawing, or anything creative you love—and we'll bring the tea! Come hang out, get creative, and help shape your community!"
+        }
+      ]
+    },
+    {
+      "id": "disabitch",
+      "name": "Disabitch",
+      "page": "groups/disabitch.html",
+      "events": [
+        {
+          "_comment": "This is the most recent upcoming Disabitch event (shown on home page)",
+          "title": "TBD",
+          "date": "March 20, 2025",
+          "time": "TBD",
+          "location": "TBD",
+          "description": "TBD"
+        },
+        {
+          "_comment": "Second upcoming Disabitch event",
+          "title": "TBD",
+          "date": "March 27, 2025",
+          "time": "TBD",
+          "location": "TBD",
+          "description": "TBD"
+        }
+      ]
+    },
+    {
+      "id": "cafeteria-collective",
+      "name": "Cafeteria Collective",
+      "page": "groups/cafeteria-collective.html",
+      "events": [
+        {
+          "_comment": "Add your first Cafeteria Collective event here when ready",
+          "title": "",
+          "date": "",
+          "time": "",
+          "location": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": "rock-and-stone",
+      "name": "Rock and Stone",
+      "page": "groups/rock-and-stone.html",
+      "events": [
+        {
+          "_comment": "Add your first Rock and Stone event here when ready",
+          "title": "",
+          "date": "",
+          "time": "",
+          "location": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": "poc-group",
+      "name": "POC Group",
+      "page": "groups/poc-group.html",
+      "events": [
+        {
+          "_comment": "Add your first POC Group event here when ready",
+          "title": "",
+          "date": "",
+          "time": "",
+          "location": "",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}
