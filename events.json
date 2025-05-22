@@ -22,11 +22,43 @@
       "events": [
         {
           "_comment": "Current SYG event shown on home page",
-          "title": "Tea and Crafts Afternoon",
-          "date": "May 20, 2025",
+          "title": "Baking with Sarai",
+          "date": "May 27, 2025",
           "time": "5:00 PM - 7:00 PM",
           "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
-          "description": "Bring your favorite crafts—crochet, painting, drawing, or anything creative you love—and we'll bring the tea! Come hang out, get creative, and help shape your community!"
+          "description": "Sarai the Youth lead will be teaching how to bake cookies. Come ready to learn to bake. We will have a bake off at the end."
+        },
+        {
+          "_comment": "Event 2",
+          "title": "DND & Game Night",
+          "date": "June 03, 2025",
+          "time": "5:00 PM - 7:00 PM",
+          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
+          "description": "DnD (if available) or Board/Video Games."
+        },
+        {
+          "_comment": "Event 3",
+          "title": "Workshop: Pride Pancakes & Crafts",
+          "date": "June 10, 2025",
+          "time": "5:00 PM - 7:00 PM",
+          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
+          "description": "We will be making rainbow pancakes and crafting. Bring your craft supplies and we will bring the pancakes."
+        },
+        {
+          "_comment": "Event 4",
+          "title": "Queer Talk",
+          "date": "June 17, 2025",
+          "time": "5:00 PM - 7:00 PM",
+          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
+          "description": "Pick an pride or lgbtq related topic, make a google slide presentation about the topic and you can present it to the group. This will be called Queer Talk."
+        },
+        {
+          "_comment": "Event 5",
+          "title": "Movie Night",
+          "date": "June 24, 2025",
+          "time": "5:00 PM - 7:00 PM",
+          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
+          "description": "Join us every 4th Tuesday of the month for a cozy night in with popcorn, good vibes, and a community-picked movie! Vote for your favorite film in the Discord channel—whichever gets the most love is what we’ll watch. We’ll provide the movie and the snacks—just bring yourself and get comfy!"
         }
       ]
     },

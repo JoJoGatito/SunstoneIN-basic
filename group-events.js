@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Format the event information using the same structure as Youth Group card
             eventContainer.innerHTML = `
               <div class="text-sm bg-gray-800 p-3 rounded mt-3">
-                <p class="text-yellow-500 font-bold">Next Meeting: ${validEvent.title}</p>
+                <p class="text-yellow-500 font-bold">Next Event: ${validEvent.title}</p>
                 <p>${validEvent.date}${validEvent.time ? ' • ' + validEvent.time : ''}</p>
               </div>
             `;
