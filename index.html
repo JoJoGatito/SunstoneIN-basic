@@ -270,36 +270,6 @@
         transition: transform 0.3s ease;
       }
     </style>
-// Verify cursor loading
-      window.addEventListener('load', () => {
-        console.log('Checking cursor loading...');
-        
-        // Test cursor loading
-        const testCursor = (url) => {
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-              console.log(`Successfully loaded cursor: ${url}`);
-              resolve();
-            };
-            img.onerror = () => {
-              console.error(`Failed to load cursor: ${url}`);
-              reject();
-            };
-            img.src = url;
-          });
-        };
-
-        // Check both cursors
-        Promise.all([
-          testCursor('cursors/default-cursor.ico'),
-          testCursor('cursors/hover-cursor.ico')
-        ]).then(() => {
-          console.log('All cursors loaded successfully');
-        }).catch(() => {
-          console.error('Some cursors failed to load');
-        });
-      });
     <script>
       function toggleAccordion(button) {
         const content = button.nextElementSibling;
