@@ -27,37 +27,36 @@
       <section class="mb-4 md:mb-0 px-4 md:px-8">
         <h2 class="text-4xl font-bold text-yellow-500 text-center mb-8">Our Current Groups</h2>
         <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          
           <!-- Cafeteria Collective -->
-          <a href="groups/cafeteria-collective.html" class="bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
+          <a href="groups/cafeteria-collective.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
             <div class="text-4xl mb-4">🏳️‍⚧️</div>
             <h3 class="text-xl font-bold text-yellow-500 mb-2">Cafeteria Collective</h3>
             <p class="text-gray-300">A vibrant community for trans individuals to connect, share experiences, and build solidarity.</p>
           </a>
 
           <!-- Rock and Stone -->
-          <a href="groups/rock-and-stone.html" class="bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
+          <a href="groups/rock-and-stone.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
             <div class="text-4xl mb-4">🏔️</div>
             <h3 class="text-xl font-bold text-yellow-500 mb-2">Rock and Stone</h3>
             <p class="text-gray-300">An inclusive outdoor and nature group exploring Southern Colorado's natural beauty together.</p>
           </a>
 
           <!-- Disabitch -->
-          <a href="groups/disabitch.html" class="bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
+          <a href="groups/disabitch.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
             <div class="text-4xl mb-4">♿</div>
             <h3 class="text-xl font-bold text-yellow-500 mb-2">Disabitch</h3>
             <p class="text-gray-300">A disability-focused group celebrating neurodiversity and advocating for accessibility.</p>
           </a>
 
-          <!-- POC Group -->
-          <a href="groups/poc-group.html" class="bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
+          <!-- Hue House Group -->
+          <a href="groups/Hue-House.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
             <div class="text-4xl mb-4">🤝</div>
-            <h3 class="text-xl font-bold text-yellow-500 mb-2">POC Group</h3>
+            <h3 class="text-xl font-bold text-yellow-500 mb-2">Hue House</h3>
             <p class="text-gray-300">A dedicated space for People of Color to build community, share experiences, and create change.</p>
           </a>
 
           <!-- Sunstone Youth Group -->
-          <a href="groups/sunstone-youth-group.html" class="bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg col-span-full md:col-span-1">
+          <a href="groups/sunstone-youth-group.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg col-span-full md:col-span-1">
             <div class="text-4xl mb-4">🌟</div>
             <h3 class="text-xl font-bold text-yellow-500 mb-2">Sunstone Youth Group (SYG)</h3>
             <p class="text-gray-300 mb-3">A safe and empowering space for LGBTQ+ youth to explore identity and build community.</p>
@@ -245,16 +244,6 @@
       </section>
     </main>
     <style>
-      /* Custom sun cursor */
-      body {
-        cursor: url('cursors/default-cursor.png') 16 16, auto;
-      }
-
-      /* Change to pointing sun for interactive elements */
-      a, button {
-        cursor: url('cursors/hover-cursor.png') 20 20, pointer;
-      }
-
       /* Accordion styles */
       .accordion-item button:hover {
         background-color: rgba(234, 179, 8, 0.1);
@@ -289,5 +278,28 @@
       }
     </script>
     <script src="group-events.js"></script>
+    <script type="module">
+      import MagicCard from './components/MagicCard.js';
+      import Pointer from './components/Pointer.js';
+      import ScrollProgress from './components/ScrollProgress.js';
+
+      // Initialize components after DOM is loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        // Initialize MagicCards
+        const cards = Array.from(document.querySelectorAll('.magic-card')).map(card => new MagicCard(card));
+        
+        // Initialize Pointer
+        Pointer();
+        
+        // Initialize ScrollProgress
+        const scrollProgress = new ScrollProgress();
+
+        // Cleanup on page unload
+        window.addEventListener('unload', () => {
+          cards.forEach(card => card.cleanup && card.cleanup());
+          scrollProgress.cleanup && scrollProgress.cleanup();
+        });
+      });
+    </script>
   </body>
 </html>

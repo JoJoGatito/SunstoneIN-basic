@@ -22,14 +22,6 @@
       "events": [
         {
           "_comment": "Current SYG event shown on home page",
-          "title": "Baking with Sarai",
-          "date": "May 27, 2025",
-          "time": "5:00 PM - 7:00 PM",
-          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
-          "description": "Sarai the Youth lead will be teaching how to bake cookies. Come ready to learn to bake. We will have a bake off at the end."
-        },
-        {
-          "_comment": "Event 2",
           "title": "DND & Game Night",
           "date": "June 03, 2025",
           "time": "5:00 PM - 7:00 PM",
@@ -116,9 +108,9 @@
       ]
     },
     {
-      "id": "poc-group",
-      "name": "POC Group",
-      "page": "groups/poc-group.html",
+      "id": "Hue-House",
+      "name": "Hue House",
+      "page": "groups/Hue-House.html",
       "events": [
         {
           "_comment": "Add your first POC Group event here when ready",
