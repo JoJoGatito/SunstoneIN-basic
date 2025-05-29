@@ -244,6 +244,16 @@
       </section>
     </main>
     <style>
+      /* Custom cursor styles */
+      * {
+        cursor: url('./cursors/default-cursor.png') 16 16, auto !important;
+      }
+      
+      a:hover,
+      button:hover {
+        cursor: url('./cursors/hover-cursor.png') 20 20, pointer !important;
+      }
+
       /* Accordion styles */
       .accordion-item button:hover {
         background-color: rgba(234, 179, 8, 0.1);
@@ -280,16 +290,12 @@
     <script src="group-events.js"></script>
     <script type="module">
       import MagicCard from './components/MagicCard.js';
-      import Pointer from './components/Pointer.js';
       import ScrollProgress from './components/ScrollProgress.js';
 
       // Initialize components after DOM is loaded
       document.addEventListener('DOMContentLoaded', () => {
         // Initialize MagicCards
         const cards = Array.from(document.querySelectorAll('.magic-card')).map(card => new MagicCard(card));
-        
-        // Initialize Pointer
-        Pointer();
         
         // Initialize ScrollProgress
         const scrollProgress = new ScrollProgress();
