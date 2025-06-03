@@ -22,6 +22,14 @@
       "events": [
         {
           "_comment": "Current SYG event shown on home page",
+          "title": "Workshop: Pride Pancakes & Crafts",
+          "date": "June 10, 2025",
+          "time": "4:00 PM - 8:00 PM",
+          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
+          "description": "We will be making rainbow pancakes and crafting. Bring your craft supplies and we will bring the pancakes."
+        },
+        {
+          "_comment": "Event 2",
           "title": "DND & Game Night",
           "date": "June 03, 2025",
           "time": "4:00 PM - 8:00 PM",
@@ -30,14 +38,6 @@
         },
         {
           "_comment": "Event 3",
-          "title": "Workshop: Pride Pancakes & Crafts",
-          "date": "June 10, 2025",
-          "time": "4:00 PM - 8:00 PM",
-          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
-          "description": "We will be making rainbow pancakes and crafting. Bring your craft supplies and we will bring the pancakes."
-        },
-        {
-          "_comment": "Event 4",
           "title": "Queer Talk",
           "date": "June 17, 2025",
           "time": "4:00 PM - 8:00 PM",
@@ -98,12 +98,12 @@
       "page": "groups/rock-and-stone.html",
       "events": [
         {
-          "_comment": "Add your first Rock and Stone event here when ready",
-          "title": "",
-          "date": "",
-          "time": "",
-          "location": "",
-          "description": ""
+          "_comment": "first event",
+          "title": "Pride Hike",
+          "date": "June 08, 2025",
+          "time": "1:00 PM - 5:00 PM",
+          "location": "9112 Pueblo Mountain Park Rd, Beulah, CO 81023",
+          "description": "Come in your hiking gear but rainbow pride! Wear your flags, strut your pride on our hike! Bring water, snack, rainjacket, ect<br><br>Carpool Group: Meet at the Rawling library @12:30pm<br><br>Other drivers meet us at the Pueblo Mountain Park!"
         }
       ]
     },

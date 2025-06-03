@@ -1,0 +1,111 @@
+{
+  "documentation": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-06-03",
+    "instructions": {
+      "addingResources": "To add a new resource, include all required fields: id, name, category, description, and contact. Tags are optional but recommended.",
+      "categories": "Resources must belong to one of the defined categories: healthcare, community-spaces, or organizations",
+      "tagging": "Use predefined tags to help users find resources matching their needs. Multiple tags can be applied to a single resource."
+    }
+  },
+  "categories": [
+    {
+      "id": "healthcare",
+      "name": "Healthcare",
+      "icon": "🏥",
+      "description": "Healthcare providers and mental health resources"
+    },
+    {
+      "id": "community-spaces",
+      "name": "Local Community Spaces",
+      "icon": "🏢",
+      "description": "Safe and inclusive gathering spaces"
+    },
+    {
+      "id": "organizations",
+      "name": "Organizations",
+      "icon": "🏛️",
+      "description": "Community organizations and nonprofits"
+    }
+  ],
+  "tags": [
+    {
+      "id": "queer-affirming",
+      "name": "Queer Affirming",
+      "description": "Services and spaces that are explicitly welcoming and supportive of LGBTQIA+ individuals"
+    },
+    {
+      "id": "accessibility",
+      "name": "Accessibility Features",
+      "description": "Includes features like wheelchair access, ASL interpretation, or sensory-friendly spaces"
+    },
+    {
+      "id": "sliding-scale",
+      "name": "Sliding Scale Fees",
+      "description": "Fees are adjusted based on income or ability to pay"
+    }
+  ],
+  "resources": [
+    {
+      "id": "inclusive-health-clinic",
+      "name": "Inclusive Health Clinic",
+      "category": "healthcare",
+      "description": "A comprehensive healthcare clinic providing primary care and mental health services with a focus on inclusive, affirming care for all individuals.",
+      "tags": ["queer-affirming", "sliding-scale", "accessibility"],
+      "contact": {
+        "address": "123 Main Street, Denver, CO 80202",
+        "phone": "(303) 555-0123",
+        "email": "info@inclusivehealthclinic.org",
+        "website": "https://inclusivehealthclinic.org"
+      },
+      "hours": {
+        "monday": "9:00 AM - 5:00 PM",
+        "tuesday": "9:00 AM - 5:00 PM",
+        "wednesday": "9:00 AM - 7:00 PM",
+        "thursday": "9:00 AM - 5:00 PM",
+        "friday": "9:00 AM - 5:00 PM"
+      }
+    },
+    {
+      "id": "community-center",
+      "name": "Rainbow Community Center",
+      "category": "community-spaces",
+      "description": "A welcoming community space offering meeting rooms, events, and social gatherings. Features include accessible entrances, gender-neutral restrooms, and quiet spaces.",
+      "tags": ["queer-affirming", "accessibility"],
+      "contact": {
+        "address": "456 Oak Avenue, Denver, CO 80205",
+        "phone": "(303) 555-0456",
+        "email": "hello@rainbowcenter.org",
+        "website": "https://rainbowcenter.org"
+      },
+      "hours": {
+        "monday": "10:00 AM - 8:00 PM",
+        "tuesday": "10:00 AM - 8:00 PM",
+        "wednesday": "10:00 AM - 8:00 PM",
+        "thursday": "10:00 AM - 8:00 PM",
+        "friday": "10:00 AM - 6:00 PM",
+        "saturday": "11:00 AM - 4:00 PM"
+      }
+    },
+    {
+      "id": "support-network",
+      "name": "Community Support Network",
+      "category": "organizations",
+      "description": "A nonprofit organization providing advocacy, support groups, and resources for marginalized communities. Offers sliding scale membership fees and accessibility accommodations.",
+      "tags": ["queer-affirming", "sliding-scale", "accessibility"],
+      "contact": {
+        "address": "789 Pine Street, Denver, CO 80210",
+        "phone": "(303) 555-0789",
+        "email": "contact@supportnetwork.org",
+        "website": "https://supportnetwork.org"
+      },
+      "hours": {
+        "monday": "9:00 AM - 6:00 PM",
+        "tuesday": "9:00 AM - 6:00 PM",
+        "wednesday": "9:00 AM - 6:00 PM",
+        "thursday": "9:00 AM - 6:00 PM",
+        "friday": "9:00 AM - 5:00 PM"
+      }
+    }
+  ]
+}
