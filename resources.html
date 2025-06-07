@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Resources - Sunstone Inclusivity Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://www.dyslexiefont.com/css/dyslexie.css" rel="stylesheet" type="text/css"/>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { dyslexie: ["Dyslexie", "sans-serif"] },
+            scale: {
+              '102': '1.02',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-black text-white font-dyslexie">
+    <!-- Navigation -->
+    <nav class="bg-black p-4">
+      <div class="max-w-7xl mx-auto">
+        <a href="index.html" class="text-yellow-500 hover:text-yellow-400" aria-label="Back to Main Page">
+          <i class="fas fa-arrow-left mr-2"></i>Back to Main Page
+        </a>
+      </div>
+    </nav>
+
+    <!-- Header Banner -->
+    <header class="w-full bg-yellow-500 py-12">
+      <div class="max-w-4xl mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-black mb-4">Community Resources</h1>
+        <p class="text-xl text-black">Find inclusive and accessible resources in Southern Colorado</p>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <!-- Category Filters -->
+      <section class="mb-8" aria-labelledby="filter-heading">
+        <h2 id="filter-heading" class="sr-only">Filter Resources by Category</h2>
+        <div class="flex flex-wrap gap-4 justify-center">
+          <button class="category-filter active px-6 py-3 rounded-lg bg-yellow-500 text-black font-bold hover:bg-yellow-400 transition-colors"
+                  data-category="all" aria-pressed="true">
+            <span class="text-xl mr-2">📍</span>All Resources
+          </button>
+          <button class="category-filter px-6 py-3 rounded-lg bg-gray-800 text-white font-bold hover:bg-gray-700 transition-colors"
+                  data-category="healthcare" aria-pressed="false">
+            <span class="text-xl mr-2">🏥</span>Healthcare
+          </button>
+          <button class="category-filter px-6 py-3 rounded-lg bg-gray-800 text-white font-bold hover:bg-gray-700 transition-colors"
+                  data-category="community-spaces" aria-pressed="false">
+            <span class="text-xl mr-2">🏢</span>Community Spaces
+          </button>
+          <button class="category-filter px-6 py-3 rounded-lg bg-gray-800 text-white font-bold hover:bg-gray-700 transition-colors"
+                  data-category="organizations" aria-pressed="false">
+            <span class="text-xl mr-2">🏛️</span>Organizations
+          </button>
+        </div>
+      </section>
+
+      <!-- Resource Cards Grid -->
+      <section aria-labelledby="resources-heading">
+        <h2 id="resources-heading" class="sr-only">Available Resources</h2>
+        <div id="resources-grid" class="grid md:grid-cols-2 gap-6">
+          <!-- Resources will be populated by JavaScript -->
+        </div>
+      </section>
+
+      <!-- Resource Detail Modal (hidden by default) -->
+      <div id="resource-modal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="bg-gray-900 rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <h2 id="modal-title" class="text-2xl font-bold text-yellow-500"></h2>
+              <button class="text-gray-400 hover:text-white" onclick="closeModal()" aria-label="Close modal">
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+            <div id="modal-content">
+              <!-- Modal content will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <style>
+      /* Custom cursor styles */
+      * {
+        cursor: url('./cursors/default-cursor.png') 16 16, auto !important;
+      }
+      
+      a:hover,
+      button:hover {
+        cursor: url('./cursors/hover-cursor.png') 20 20, pointer !important;
+      }
+
+      /* Modal styles */
+      .modal-open {
+        overflow: hidden;
+      }
+
+      /* Loading animation */
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Resource card transitions */
+      .magic-card {
+        transition: all 0.3s ease-out;
+      }
+
+      .magic-card:focus-visible {
+        outline: 2px solid #EAB308;
+        outline-offset: 2px;
+      }
+
+      /* Modal transitions */
+      #resource-modal {
+        transition: opacity 0.3s ease-out;
+      }
+
+      #resource-modal.flex {
+        opacity: 1;
+      }
+
+      #resource-modal.hidden {
+        opacity: 0;
+      }
+    </style>
+
+    <!-- Scripts -->
+    <script type="module" src="resources.js"></script>
+  </body>
+</html>

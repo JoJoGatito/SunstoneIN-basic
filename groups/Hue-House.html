@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hue House - Sunstone Inclusivity Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="group-page-events.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://www.dyslexiefont.com/css/dyslexie.css" rel="stylesheet" type="text/css"/>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { dyslexie: ["Dyslexie", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-black text-white font-dyslexie">
+    <nav class="bg-black p-4">
+      <div class="max-w-7xl mx-auto">
+        <a href="../index.html" class="text-yellow-500 hover:text-yellow-400">
+          <i class="fas fa-arrow-left mr-2"></i>Back to Main Page
+        </a>
+      </div>
+    </nav>
+
+    <header class="w-full bg-yellow-500 py-12">
+      <div class="max-w-4xl mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-black mb-4">Hue House</h1>
+        <p class="text-xl text-black">Building community and celebrating our diverse cultures</p>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+      <!-- Group Description -->
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-yellow-500 mb-4">About Us</h2>
+        <p class="text-lg mb-4">
+          Our Hue House (Black, Indigenous, and People of Color) group creates a dedicated space for community members of color to connect, share experiences, and celebrate our diverse cultures and identities. We focus on building solidarity, fostering understanding, and creating opportunities for authentic connection.
+        </p>
+        <p class="text-lg">
+          Through our gatherings and events, we work to address the unique challenges faced by BIPOC in Southern Colorado while celebrating our strengths, traditions, and contributions to the community. We create spaces where members can be their authentic selves and find support among others who share similar experiences.
+        </p>
+      </section>
+
+      <section class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-yellow-500 mb-6">Upcoming Events</h2>
+        
+        <!-- Events will be loaded dynamically by group-page-events.js -->
+      </section>
+
+      <!-- Join Discord Section -->
+      <section class="text-center bg-gray-900 p-8 rounded-lg">
+        <h2 class="text-2xl md:text-3xl font-bold text-yellow-500 mb-4">Join Our Community</h2>
+        <p class="text-lg mb-6">Connect with us on Discord for updates, discussions, and community support!</p>
+        <a href="https://discord.gg/5XeapVWHVv" 
+           class="inline-block px-8 py-4 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-400 transition-colors">
+          <i class="fab fa-discord mr-2"></i>Join Our Discord
+        </a>
+      </section>
+    </main>
+
+    <footer class="bg-gray-900 mt-12 py-6">
+      <div class="max-w-4xl mx-auto px-4 text-center">
+        <p class="text-gray-400">
+          Part of the <a href="../index.html" class="text-yellow-500 hover:text-yellow-400">Sunstone Inclusivity Network</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

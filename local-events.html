@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Local Events - Sunstone Inclusivity Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://www.dyslexiefont.com/css/dyslexie.css" rel="stylesheet" type="text/css"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { dyslexie: ["Dyslexie", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+ </head>
+ <body class="bg-black text-white font-dyslexie">
+    <nav class="p-4">
+      <a href="index.html" class="text-yellow-500 hover:text-yellow-400">
+        <i class="fas fa-arrow-left mr-2"></i>Back to Homepage
+      </a>
+    </nav>
+    
+    <header class="text-center px-4 py-12">
+      <h1 class="text-4xl font-bold text-yellow-500 mb-4">Local Events</h1>
+      <p class="max-w-2xl mx-auto text-gray-300">
+        Stay connected with our vibrant community through these upcoming events. We aim to highlight local queer, neurodivergent and/or BIPOC inclusive events.
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4">
+      <section class="mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Event Card Start -->
+          <article class="bg-gray-900 rounded-lg overflow-hidden">
+            <div class="relative">
+              <div class="absolute top-4 left-4 bg-yellow-500 text-black font-bold px-3 py-2 rounded z-10" aria-label="Event date: June 10, 2025">
+                <div class="text-sm">JUNE</div>
+                <div class="text-xl">10</div>
+              </div>
+              <div class="relative pt-[129.4%] bg-gray-800">
+                <a href="images/events/Adult-Storytime.webp" class="event-flyer">
+                  <img src="images/events/Adult-Storytime.webp" alt="Adult Storytime at the library on June 10, 2025" class="absolute inset-0 w-full h-full object-contain">
+                </a>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-yellow-500 mb-2">Adult Storytime</h3>
+              <p class="text-gray-300 mb-4">When was the last time someone read to you? Come get a snack and listen to A Psalm for the Wild-Built by Becky Chambers :)</p>
+              <div class="flex items-center text-gray-400">
+                <i class="fas fa-clock mr-2"></i>
+                <span>11:00 AM - 12:30 PM</span>
+              </div>
+              <div class="flex items-center text-gray-400 mt-2">
+                <i class="fas fa-map-marker-alt mr-2"></i>
+                <span>Rawlings Library</span>
+              </div>
+              <div class="flex items-center text-gray-400 mt-2">
+                <i class="fas fa-users mr-2"></i>
+                <span>Community Focus: Queer</span>
+              </div>
+              <div class="flex items-center text-gray-400 mt-2">
+                <i class="fas fa-volume-mute mr-2"></i>
+                <span>Sensory-Friendly: Very Likely</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Event Card End (add more after this) -->
+          
+        </div>
+      </section>
+
+      <section class="my-16 text-center">
+        <h2 class="text-3xl font-bold text-yellow-500 mb-4">Submit Your Event</h2>
+        <p class="max-w-2xl mx-auto mb-6 text-gray-300">
+          Have an inclusive community event you'd like to share? We'd love to help promote it!
+        </p>
+        <a href="mailto:events@sunstonein.org" class="inline-block px-6 py-3 text-lg font-bold uppercase tracking-wider bg-yellow-500 text-black hover:bg-yellow-400 transition-colors">
+          Submit Event
+        </a>
+      </section>
+    </main>
+
+    <footer class="mt-16 py-8 px-4 border-t border-gray-800">
+      <div class="max-w-6xl mx-auto text-center">
+        <p class="text-gray-400">
+          © 2025 Sunstone Inclusivity Network. Creating intentionally inclusive spaces in Southern Colorado.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        new SimpleLightbox('.event-flyer', {
+          captionPosition: 'bottom',
+          widthRatio: 0.9,
+          heightRatio: 0.9,
+          disableScroll: true,
+          closeText: '×',
+          showCounter: false
+        });
+      });
+    </script>
+  </body>
+</html>
