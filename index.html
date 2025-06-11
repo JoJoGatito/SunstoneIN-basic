@@ -5,6 +5,10 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>Sunstone Inclusivity Network</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import { RainbowPulsatingButton } from './components/RainbowPulsatingButton.js';
+      customElements.define('rainbow-pulsating-button', RainbowPulsatingButton);
+    </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://www.dyslexiefont.com/css/dyslexie.css" rel="stylesheet" type="text/css"/>
     <script>
@@ -18,50 +22,100 @@
     </script>
  </head>
  <body class="bg-black text-white font-dyslexie">
-    <header class="w-full md:max-w-4xl md:mx-auto">
-      <div class="w-full md:px-0 px-4 pt-[60%] md:pt-[60%] relative">
-        <img alt="A woman looking upward in a black and white photo" class="absolute top-0 left-0 object-cover object-center w-full h-full" src="images/SIN Banner 3.webp"/>
+    <header class="w-full relative">
+      <div class="max-w-4xl mx-auto relative">
+        <img src="images/SIN-Couple.webp" alt="SIN Couple" class="w-full h-auto"/>
+        <img src="images/sinlogo.webp" alt="SIN Logo" class="absolute top-0 -left-4 sm:-left-12 md:-left-16 w-[50%] h-auto z-10"/>
       </div>
     </header>
     <main>
-      <section class="mb-4 md:mb-0 px-4 md:px-8">
-        <h2 class="text-4xl font-bold text-yellow-500 text-center mb-8">Our Current Groups</h2>
-        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      <section class="px-4 md:px-8">
+        <h2 class="text-5xl md:text-6xl font-bold text-yellow-500 text-center mb-6">Our Current Groups</h2>
+        <div class="max-w-4xl mx-auto">
+          <div class="relative flex overflow-hidden gap-4 rounded-lg select-none">
+            <div class="relative flex items-center flex-shrink-0 gap-4 cursor-grab scrollingX">
+              <!-- Original cards -->
           <!-- Cafeteria Collective -->
-          <a href="groups/cafeteria-collective.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
-            <div class="text-4xl mb-4">🏳️‍⚧️</div>
-            <h3 class="text-xl font-bold text-yellow-500 mb-2">Cafeteria Collective</h3>
-            <p class="text-gray-300">A vibrant community for trans individuals to connect, share experiences, and build solidarity.</p>
+          <a href="groups/cafeteria-collective.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+            <img src="images/Cafeteria card.webp" alt="Cafeteria Collective" class="w-full h-full object-cover"/>
+            <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+              <!-- Events will be loaded here by group-events.js -->
+            </div>
           </a>
 
           <!-- Rock and Stone -->
-          <a href="groups/rock-and-stone.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
-            <div class="text-4xl mb-4">🏔️</div>
-            <h3 class="text-xl font-bold text-yellow-500 mb-2">Rock and Stone</h3>
-            <p class="text-gray-300">An inclusive outdoor and nature group exploring Southern Colorado's natural beauty together.</p>
+          <a href="groups/rock-and-stone.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+            <img src="images/Rock Stone card.webp" alt="Rock and Stone" class="w-full h-full object-cover"/>
+            <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+              <!-- Events will be loaded here by group-events.js -->
+            </div>
           </a>
 
           <!-- Disabitch -->
-          <a href="groups/disabitch.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
-            <div class="text-4xl mb-4">♿</div>
-            <h3 class="text-xl font-bold text-yellow-500 mb-2">Disabitch</h3>
-            <p class="text-gray-300">A disability-focused group celebrating neurodiversity and advocating for accessibility.</p>
+          <a href="groups/disabitch.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+            <img src="images/Disabitch card.webp" alt="Disabitch" class="w-full h-full object-cover"/>
+            <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+              <!-- Events will be loaded here by group-events.js -->
+            </div>
           </a>
 
           <!-- Hue House Group -->
-          <a href="groups/Hue-House.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg">
-            <div class="text-4xl mb-4">🤝</div>
-            <h3 class="text-xl font-bold text-yellow-500 mb-2">Hue House</h3>
-            <p class="text-gray-300">A dedicated space for People of Color to build community, share experiences, and create change.</p>
+          <a href="groups/Hue-House.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+            <img src="images/Hue House card.webp" alt="Hue House" class="w-full h-full object-cover"/>
+            <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+              <!-- Events will be loaded here by group-events.js -->
+            </div>
           </a>
 
           <!-- Sunstone Youth Group -->
-          <a href="groups/sunstone-youth-group.html" class="magic-card group bg-gray-900 rounded-lg p-6 transition-all hover:transform hover:scale-102 hover:shadow-lg col-span-full md:col-span-1">
-            <div class="text-4xl mb-4">🌟</div>
-            <h3 class="text-xl font-bold text-yellow-500 mb-2">Sunstone Youth Group (SYG)</h3>
-            <p class="text-gray-300 mb-3">A safe and empowering space for LGBTQ+ youth to explore identity and build community.</p>
+          <a href="groups/sunstone-youth-group.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+            <img src="images/SYG card.webp" alt="SYG" class="w-full h-full object-cover"/>
+            <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+              <!-- Events will be loaded here by group-events.js -->
+            </div>
           </a>
 
+              <!-- Cloned cards for seamless loop -->
+              <!-- Cafeteria Collective -->
+              <a href="groups/cafeteria-collective.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+                <img src="images/Cafeteria card.webp" alt="Cafeteria Collective" class="w-full h-full object-cover"/>
+                <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+                  <!-- Events will be loaded here by group-events.js -->
+                </div>
+              </a>
+
+              <!-- Rock and Stone -->
+              <a href="groups/rock-and-stone.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+                <img src="images/Rock Stone card.webp" alt="Rock and Stone" class="w-full h-full object-cover"/>
+                <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+                  <!-- Events will be loaded here by group-events.js -->
+                </div>
+              </a>
+
+              <!-- Disabitch -->
+              <a href="groups/disabitch.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+                <img src="images/Disabitch card.webp" alt="Disabitch" class="w-full h-full object-cover"/>
+                <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+                  <!-- Events will be loaded here by group-events.js -->
+                </div>
+              </a>
+
+              <!-- Hue House Group -->
+              <a href="groups/Hue-House.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+                <img src="images/Hue House card.webp" alt="Hue House" class="w-full h-full object-cover"/>
+                <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+                  <!-- Events will be loaded here by group-events.js -->
+                </div>
+              </a>
+
+              <!-- Sunstone Youth Group -->
+              <a href="groups/sunstone-youth-group.html" class="magic-card group block w-full aspect-[518/509] rounded-lg overflow-hidden transition-all hover:transform hover:scale-102 hover:shadow-lg relative">
+                <img src="images/SYG card.webp" alt="SYG" class="w-full h-full object-cover"/>
+                <div class="group-event-container absolute bottom-[20%] left-[5%] right-[5%] z-10">
+                  <!-- Events will be loaded here by group-events.js -->
+                </div>
+              </a>
+            </div>
         </div>
       </section>
       <section class="my-16 px-4 md:px-8 flex flex-col items-center">
@@ -70,12 +124,12 @@
           Discover and connect with our vibrant community through local events. From workshops to social gatherings,
           find opportunities to engage, learn, and build meaningful connections.
         </p>
-        <a
-          href="local-events.html"
-          class="mt-6 inline-block px-8 py-4 text-lg font-bold uppercase tracking-wider bg-yellow-500 text-black hover:bg-yellow-400 transition-colors"
+        <rainbow-pulsating-button
+          onclick="window.location.href='local-events.html'"
+          class="mt-8 block mx-auto"
         >
           View Events
-        </a>
+        </rainbow-pulsating-button>
       </section>
       <section class="my-16">
         <div class="max-w-4xl mx-auto px-4 md:px-8">
@@ -226,24 +280,63 @@
           Your donation helps us continue to provide inclusive spaces and
           resources. Thank you for your support!
         </p>
-        <a
-          class="mt-4 inline-block px-6 py-3 text-lg font-bold uppercase tracking-wider bg-yellow-500 text-black"
-          href="https://opencollective.com/sunstone-inclusivity-network"
+        <rainbow-pulsating-button
+          onclick="window.location.href='https://opencollective.com/sunstone-inclusivity-network'"
+          class="mt-8 block mx-auto"
         >
           Donate Now
-        </a>
+        </rainbow-pulsating-button>
       </section>
       <section class="my-16 px-4 md:px-8 flex flex-col items-center">
         <h2 class="text-4xl font-bold text-yellow-500">Join Our Community</h2>
         <p class="mt-4">Connect with like-minded individuals and be a part of our growing network!</p>
-        <a
-          class="mt-4 inline-block px-6 py-3 text-lg font-bold uppercase tracking-wider bg-yellow-500 text-black"
-          href="https://discord.gg/5XeapVWHVv"
-          >Join Our Discord</a
+        <rainbow-pulsating-button
+          onclick="window.location.href='https://discord.gg/5XeapVWHVv'"
+          class="mt-8 block mx-auto"
         >
+          Join Our Discord
+        </rainbow-pulsating-button>
       </section>
     </main>
     <style>
+      @keyframes scroll {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      .scrollingX {
+        animation: scroll 30s linear infinite;
+        width: max-content;
+      }
+
+      .scrollingX > * {
+        flex: 0 0 350px;
+        max-width: 350px;
+      }
+
+      @media (min-width: 768px) {
+        .scrollingX > * {
+          flex: 0 0 500px;
+          max-width: 500px;
+        }
+      }
+
+      /* Pause animation on hover */
+      .relative:hover .scrollingX {
+        animation-play-state: paused;
+      }
+
+      /* Make carousel scrollable on mobile/tablet */
+      @media (max-width: 1024px) {
+        .scrollingX {
+          overflow-x: auto;
+        }
+      }
+
       /* Custom cursor styles */
       * {
         cursor: url('./cursors/default-cursor.png') 16 16, auto !important;
@@ -252,6 +345,12 @@
       a:hover,
       button:hover {
         cursor: url('./cursors/hover-cursor.png') 20 20, pointer !important;
+      }
+
+      /* Event container glass effect */
+      .group-event-container > div {
+        background: rgba(0, 0, 0, 0.2) !important;
+        backdrop-filter: blur(4px);
       }
 
       /* Accordion styles */
@@ -291,6 +390,7 @@
     <script type="module">
       import MagicCard from './components/MagicCard.js';
       import ScrollProgress from './components/ScrollProgress.js';
+      import MarqueeCarousel from './components/MarqueeCarousel.js';
 
       // Initialize components after DOM is loaded
       document.addEventListener('DOMContentLoaded', () => {
@@ -300,10 +400,16 @@
         // Initialize ScrollProgress
         const scrollProgress = new ScrollProgress();
 
+        // Initialize MarqueeCarousel
+        const carousels = Array.from(document.querySelectorAll('.relative.flex.overflow-hidden')).map(
+          carousel => new MarqueeCarousel(carousel)
+        );
+
         // Cleanup on page unload
         window.addEventListener('unload', () => {
           cards.forEach(card => card.cleanup && card.cleanup());
           scrollProgress.cleanup && scrollProgress.cleanup();
+          carousels.forEach(carousel => carousel.cleanup && carousel.cleanup());
         });
       });
     </script>

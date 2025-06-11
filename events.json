@@ -83,12 +83,12 @@
       "page": "groups/cafeteria-collective.html",
       "events": [
         {
-          "_comment": "Add your first Cafeteria Collective event here when ready",
-          "title": "",
-          "date": "",
-          "time": "",
-          "location": "",
-          "description": ""
+          "_comment": "First Cafeteria Collective event",
+          "title": "Trans Community Meet & Greet",
+          "date": "June 15, 2025",
+          "time": "6:00 PM - 8:00 PM",
+          "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
+          "description": "Join us for an evening of connection and community building. Light refreshments will be provided."
         }
       ]
     },
