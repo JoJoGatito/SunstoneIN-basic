@@ -65,7 +65,7 @@ initialize() {
   this.injectStyles();
 
   // Get the container
-  const container = document.querySelector('#our-groups-section');
+  const container = document.querySelector('#carousel-container');
   if (!container) {
     console.error('Could not find #our-groups-section');
     return;
@@ -153,6 +153,7 @@ initialize() {
 
     this.cards.forEach((card, i) => {
       const offset = (i - this.currentIndex + this.cards.length) % this.cards.length;
+      console.log(`Card ${i} (${this.groupData[i].name}) - offset: ${offset}`);
 
       card.classList.remove(
         "center",
@@ -174,6 +175,7 @@ initialize() {
       } else if (offset === this.cards.length - 2) {
         card.classList.add("left-2");
       } else {
+        console.log(`Adding hidden class to card ${i} (${this.groupData[i].name}) with offset ${offset}`);
         card.classList.add("hidden");
       }
     });
