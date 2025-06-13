@@ -288,15 +288,44 @@ initialize() {
         text-align: center;
         pointer-events: none;
         font-weight: bold;
+        z-index: 20;
       }
 
       @media (max-width: 768px) {
         .event-bubble {
-          bottom: 20px;
+          bottom: 35px;
           font-size: 0.85rem;
         }
         .event-bubble div:first-child {
-          font-size: 1.5em;
+          font-size: 1.2em;
+          margin-bottom: 4px !important;
+        }
+        .carousel-container {
+          height: 350px !important;
+          margin: 40px auto 0 !important;
+        }
+        .card {
+          width: 300px !important;
+          height: 294px !important;
+          transform-origin: center !important;
+        }
+        .card.center {
+          transform: scale(1.05) translateZ(0) !important;
+        }
+        .card.left-1 {
+          transform: translateX(-40px) scale(0.9) translateZ(-50px) !important;
+        }
+        .card.right-1 {
+          transform: translateX(40px) scale(0.9) translateZ(-50px) !important;
+        }
+        .card.left-2, .card.right-2 {
+          display: none !important;
+        }
+        .nav-arrow.left {
+          left: 10px !important;
+        }
+        .nav-arrow.right {
+          right: 10px !important;
         }
       }
 
