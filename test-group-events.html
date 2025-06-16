@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Group Events Test - Sunstone Inclusivity Network</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="test-group-events.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://www.dyslexiefont.com/css/dyslexie.css" rel="stylesheet" type="text/css"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { dyslexie: ["Dyslexie", "sans-serif"] },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="bg-black text-white font-dyslexie">
+  <nav class="bg-black p-4">
+    <div class="max-w-7xl mx-auto">
+      <a href="index.html" class="text-yellow-500 hover:text-yellow-400">
+        <i class="fas fa-arrow-left mr-2"></i>Back to Main Page
+      </a>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-yellow-500 mb-8">Group Events Test</h1>
+    
+    <div class="bg-gray-900 p-6 rounded-lg mb-8">
+      <h2 class="text-2xl font-bold text-yellow-500 mb-4">Test Results</h2>
+      <div id="test-results">
+        <!-- Test results will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <div class="bg-gray-900 p-6 rounded-lg">
+      <h2 class="text-2xl font-bold text-yellow-500 mb-4">Console Output</h2>
+      <pre id="console-output" class="bg-black p-4 rounded text-sm font-mono overflow-x-auto">
+        <!-- Console output will be displayed here -->
+      </pre>
+    </div>
+
+    <div class="mt-8 bg-gray-900 p-6 rounded-lg">
+      <h2 class="text-2xl font-bold text-yellow-500 mb-4">Test Coverage</h2>
+      <ul class="list-disc list-inside space-y-2 text-gray-300">
+        <li>Featured Events Query
+          <ul class="list-inside ml-6 text-sm text-gray-400">
+            <li>• Tests fetching featured events across all groups</li>
+            <li>• Verifies query performance</li>
+            <li>• Validates data structure</li>
+          </ul>
+        </li>
+        <li>Group-Specific Events
+          <ul class="list-inside ml-6 text-sm text-gray-400">
+            <li>• Tests fetching events for a specific group</li>
+            <li>• Verifies date filtering and ordering</li>
+            <li>• Checks query performance</li>
+          </ul>
+        </li>
+        <li>Real-time Event Updates
+          <ul class="list-inside ml-6 text-sm text-gray-400">
+            <li>• Tests real-time subscription setup</li>
+            <li>• Verifies event filtering</li>
+            <li>• Monitors update reception</li>
+          </ul>
+        </li>
+        <li>JSON Fallback
+          <ul class="list-inside ml-6 text-sm text-gray-400">
+            <li>• Tests loading events from JSON</li>
+            <li>• Validates JSON structure</li>
+            <li>• Measures load performance</li>
+          </ul>
+        </li>
+        <li>Performance Monitoring
+          <ul class="list-inside ml-6 text-sm text-gray-400">
+            <li>• Measures query response times</li>
+            <li>• Tracks event counts</li>
+            <li>• Analyzes performance patterns</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    // Capture console output
+    const originalConsole = {
+      log: console.log,
+      error: console.error,
+      warn: console.warn
+    };
+
+    const consoleOutput = document.getElementById('console-output');
+    
+    function formatTime() {
+      return new Date().toLocaleTimeString();
+    }
+
+    console.log = function(...args) {
+      originalConsole.log.apply(console, args);
+      consoleOutput.innerHTML += `[${formatTime()}] LOG: ${args.join(' ')}\n`;
+    };
+
+    console.error = function(...args) {
+      originalConsole.error.apply(console, args);
+      consoleOutput.innerHTML += `[${formatTime()}] ERROR: ${args.join(' ')}\n`;
+    };
+
+    console.warn = function(...args) {
+      originalConsole.warn.apply(console, args);
+      consoleOutput.innerHTML += `[${formatTime()}] WARN: ${args.join(' ')}\n`;
+    };
+  </script>
+</body>
+</html>
