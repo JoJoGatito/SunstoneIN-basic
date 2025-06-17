@@ -74,9 +74,30 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (connectionError) {
       logDebug(`Connection test failed: ${connectionError.message}`, 'error');
       
-      // Analyze error
-      if (connectionError.message.includes('CORS')) {
-        logDebug('CORS issue detected - GitHub Pages domain likely not allowed in Supabase', 'error');
+      // Analyze error for 2025 Supabase CORS issues
+      if (connectionError.message.includes('CORS') || connectionError.message.includes('cross-origin')) {
+        logDebug('CORS issue detected with 2025 Supabase - checking details...', 'error');
+        
+        // Check for preflight issues
+        const hasCustomHeaders = Object.keys(supabase.headers || {})
+          .some(h => !['content-type', 'authorization'].includes(h.toLowerCase()));
+          
+        if (hasCustomHeaders) {
+          logDebug('❌ Custom headers detected that may trigger preflight requests', 'error');
+          logDebug('Solution: Remove non-standard headers from requests', 'info');
+        }
+        
+        // Check protocol
+        if (window.location.protocol !== 'https:') {
+          logDebug('❌ Using non-HTTPS protocol which may cause CORS issues', 'error');
+          logDebug('Solution: Ensure your site is served over HTTPS', 'info');
+        }
+        
+        // General 2025 advice
+        logDebug('2025 Supabase CORS Guide:', 'info');
+        logDebug('1. REST API: Supabase sets CORS headers automatically', 'info');
+        logDebug('2. Custom domains: Use a reverse proxy or CDN edge middleware', 'info');
+        logDebug('3. Edge Functions: Set CORS headers manually in response', 'info');
       }
       
       if (connectionError.message.includes('permission denied')) {
@@ -93,7 +114,31 @@ document.addEventListener('DOMContentLoaded', async function() {
     logDebug(`Error during connection test: ${error.message}`, 'error');
   }
   
-  // Check 5: RLS Policies
+  // Check 5: Request Headers Analysis
+  try {
+    logDebug('Analyzing request headers...');
+    
+    // Create a dummy request to analyze headers
+    const dummyRequest = supabase.from('groups').select('id');
+    
+    // Check for problematic headers
+    const headers = dummyRequest.headers || {};
+    logDebug(`Request headers: ${JSON.stringify(headers)}`, 'info');
+    
+    const nonStandardHeaders = Object.keys(headers)
+      .filter(h => !['content-type', 'authorization', 'apikey'].includes(h.toLowerCase()));
+    
+    if (nonStandardHeaders.length > 0) {
+      logDebug(`⚠️ Non-standard headers detected: ${nonStandardHeaders.join(', ')}`, 'warning');
+      logDebug('These may trigger preflight requests that need special handling', 'warning');
+    } else {
+      logDebug('✅ No problematic headers detected', 'success');
+    }
+  } catch (error) {
+    logDebug(`Error analyzing headers: ${error.message}`, 'error');
+  }
+  
+  // Check 6: RLS Policies
   try {
     logDebug('Testing RLS policies...');
     const tables = ['events', 'groups'];
@@ -115,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     logDebug(`Error testing RLS: ${error.message}`, 'error');
   }
   
-  // Check 6: Browser Capabilities
+  // Check 7: Browser Capabilities
   try {
     logDebug('Checking browser capabilities...');
     
@@ -123,6 +168,38 @@ document.addEventListener('DOMContentLoaded', async function() {
       logDebug('Running in secure context', 'success');
     } else {
       logDebug('Not running in secure context - may cause issues', 'warning');
+    }
+    
+    // Check 8: 2025 CORS Test
+    try {
+      logDebug('Running 2025 Supabase CORS test...');
+      
+      // Test if a simple request works (shouldn't trigger preflight)
+      const simpleRequest = async () => {
+        try {
+          const { data, error } = await fetch(`${SUPABASE_URL}/rest/v1/groups?select=id&limit=1`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_ANON_KEY
+            }
+          }).then(r => r.json());
+          
+          if (error) {
+            logDebug(`Simple request failed: ${error.message}`, 'error');
+            return false;
+          }
+          logDebug('✅ Simple request succeeded', 'success');
+          return true;
+        } catch (e) {
+          logDebug(`Simple request error: ${e.message}`, 'error');
+          return false;
+        }
+      };
+      
+      simpleRequest();
+    } catch (error) {
+      logDebug(`CORS test error: ${error.message}`, 'error');
     }
     
     if (window.localStorage) {

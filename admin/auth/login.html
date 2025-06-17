@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  
+  <!-- Tailwind CSS via CDN for UI styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Supabase Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Supabase Configuration -->
+  <script src="../../supabase-config.js"></script>
+  
+  <!-- Authentication Module -->
+  <script src="./auth.js"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg">
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold">Admin Login</h1>
+      <p class="text-gray-400 mt-2">Sign in to access the event management interface</p>
+    </div>
+    
+    <div id="login-form">
+      <div class="mb-6">
+        <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="fas fa-envelope text-gray-500"></i>
+          </div>
+          <input 
+            type="email" 
+            id="email" 
+            class="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="your@email.com"
+          >
+        </div>
+      </div>
+      
+      <div class="mb-6">
+        <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="fas fa-lock text-gray-500"></i>
+          </div>
+          <input 
+            type="password" 
+            id="password" 
+            class="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="••••••••"
+          >
+        </div>
+        <p id="login-error" class="text-red-500 text-sm mt-2 hidden"></p>
+      </div>
+      
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center">
+          <input 
+            type="checkbox" 
+            id="remember-me" 
+            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700"
+          >
+          <label for="remember-me" class="ml-2 block text-sm text-gray-300">Remember me</label>
+        </div>
+        
+        <div class="text-sm">
+          <a href="#" id="forgot-password" class="text-blue-400 hover:text-blue-300">Forgot password?</a>
+        </div>
+      </div>
+      
+      <button 
+        id="login-button" 
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+      >
+        Sign In
+      </button>
+    </div>
+    
+    <div id="loading" class="hidden text-center py-8">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <p class="mt-4 text-gray-400">Authenticating...</p>
+    </div>
+    
+    <div id="forgot-password-form" class="hidden">
+      <p class="mb-4 text-gray-300">Enter your email address and we'll send you a link to reset your password.</p>
+      
+      <div class="mb-6">
+        <label for="reset-email" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="fas fa-envelope text-gray-500"></i>
+          </div>
+          <input 
+            type="email" 
+            id="reset-email" 
+            class="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="your@email.com"
+          >
+        </div>
+        <p id="reset-error" class="text-red-500 text-sm mt-2 hidden"></p>
+      </div>
+      
+      <div class="flex space-x-4">
+        <button 
+          id="reset-button" 
+          class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+        >
+          Send Reset Link
+        </button>
+        
+        <button 
+          id="back-to-login" 
+          class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+        >
+          Back to Login
+        </button>
+      </div>
+    </div>
+    
+    <div id="reset-success" class="hidden text-center py-6">
+      <div class="mb-4 text-green-500">
+        <i class="fas fa-check-circle text-5xl"></i>
+      </div>
+      <h3 class="text-xl font-medium mb-2">Password Reset Email Sent</h3>
+      <p class="text-gray-400 mb-6">Check your email for a link to reset your password.</p>
+      <button 
+        id="back-to-login-success" 
+        class="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+      >
+        Back to Login
+      </button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Elements
+      const loginForm = document.getElementById('login-form');
+      const forgotPasswordForm = document.getElementById('forgot-password-form');
+      const resetSuccessView = document.getElementById('reset-success');
+      const loadingView = document.getElementById('loading');
+      
+      const loginButton = document.getElementById('login-button');
+      const forgotPasswordLink = document.getElementById('forgot-password');
+      const backToLoginButton = document.getElementById('back-to-login');
+      const backToLoginSuccessButton = document.getElementById('back-to-login-success');
+      const resetButton = document.getElementById('reset-button');
+      
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const resetEmailInput = document.getElementById('reset-email');
+      
+      const loginError = document.getElementById('login-error');
+      const resetError = document.getElementById('reset-error');
+      
+      // Check if already authenticated
+      if (window.Auth && window.Auth.isAuthenticated()) {
+        // Redirect to admin dashboard
+        window.location.href = '../index.html';
+        return;
+      }
+      
+      // Show/hide views
+      function showView(viewToShow) {
+        [loginForm, forgotPasswordForm, resetSuccessView, loadingView].forEach(view => {
+          view.classList.add('hidden');
+        });
+        
+        viewToShow.classList.remove('hidden');
+      }
+      
+      // Handle login
+      loginButton.addEventListener('click', async function() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        
+        if (!email || !password) {
+          loginError.textContent = 'Please enter both email and password';
+          loginError.classList.remove('hidden');
+          return;
+        }
+        
+        // Show loading
+        showView(loadingView);
+        
+        try {
+          // Attempt to sign in
+          const result = await window.Auth.signIn(email, password);
+          
+          if (result.error) {
+            // Show error
+            loginError.textContent = result.error;
+            loginError.classList.remove('hidden');
+            showView(loginForm);
+          } else {
+            // Redirect to admin dashboard
+            window.location.href = '../index.html';
+          }
+        } catch (error) {
+          // Show error
+          loginError.textContent = error.message || 'Sign in failed';
+          loginError.classList.remove('hidden');
+          showView(loginForm);
+        }
+      });
+      
+      // Handle forgot password link
+      forgotPasswordLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Copy email from login form if available
+        if (emailInput.value.trim()) {
+          resetEmailInput.value = emailInput.value.trim();
+        }
+        
+        // Hide any previous errors
+        resetError.classList.add('hidden');
+        
+        // Show forgot password form
+        showView(forgotPasswordForm);
+      });
+      
+      // Handle back to login
+      backToLoginButton.addEventListener('click', function() {
+        // Hide any previous errors
+        loginError.classList.add('hidden');
+        
+        // Show login form
+        showView(loginForm);
+      });
+      
+      // Handle back to login from success
+      backToLoginSuccessButton.addEventListener('click', function() {
+        // Hide any previous errors
+        loginError.classList.add('hidden');
+        
+        // Show login form
+        showView(loginForm);
+      });
+      
+      // Handle reset password
+      resetButton.addEventListener('click', async function() {
+        const email = resetEmailInput.value.trim();
+        
+        if (!email) {
+          resetError.textContent = 'Please enter your email address';
+          resetError.classList.remove('hidden');
+          return;
+        }
+        
+        // Show loading
+        showView(loadingView);
+        
+        try {
+          // Attempt to reset password
+          const result = await window.Auth.resetPassword(email);
+          
+          if (result.error) {
+            // Show error
+            resetError.textContent = result.error;
+            resetError.classList.remove('hidden');
+            showView(forgotPasswordForm);
+          } else {
+            // Show success
+            showView(resetSuccessView);
+          }
+        } catch (error) {
+          // Show error
+          resetError.textContent = error.message || 'Password reset failed';
+          resetError.classList.remove('hidden');
+          showView(forgotPasswordForm);
+        }
+      });
+      
+      // Add keyboard event listeners
+      emailInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          passwordInput.focus();
+        }
+      });
+      
+      passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          loginButton.click();
+        }
+      });
+      
+      resetEmailInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          resetButton.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

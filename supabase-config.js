@@ -101,7 +101,7 @@ function initializeSupabase() {
     validateUrl(SUPABASE_URL);
     validateKey(SUPABASE_ANON_KEY);
     
-    // Enhanced config for GitHub Pages compatibility
+    // 2025 Supabase CORS compatibility config
     const config = {
       auth: {
         autoRefreshToken: true,
@@ -109,18 +109,16 @@ function initializeSupabase() {
       },
       db: {
         schema: 'public'
-      },
-      global: {
-        headers: {
-          'x-testing-mode': 'true' // Custom header for test environment
-        }
       }
     };
     
-    // Add GitHub Pages specific headers if needed
+    // As of 2025, Supabase handles CORS automatically for REST API
+    // Avoid custom headers that trigger preflight requests unless absolutely necessary
+    
+    // Log GitHub Pages environment if detected
     if (window.GITHUB_PAGES_DOMAIN) {
-      console.log('Adding GitHub Pages specific configuration');
-      config.global.headers['x-github-pages-domain'] = window.GITHUB_PAGES_DOMAIN;
+      console.log('GitHub Pages environment detected:', window.GITHUB_PAGES_DOMAIN);
+      console.log('Using Supabase automatic CORS handling for REST API');
     }
     
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
@@ -164,6 +162,16 @@ async function checkConnection() {
     return true;
   } catch (error) {
     console.error('Supabase connection error:', error);
+    
+    // Enhanced error logging for CORS issues in 2025
+    if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
+      console.error('CORS ERROR DETECTED - 2025 Supabase Update:');
+      console.error('1. Supabase REST API sets CORS headers automatically');
+      console.error('2. Custom headers may trigger preflight requests that fail');
+      console.error('3. For custom domains, use a reverse proxy or CDN edge middleware');
+      console.error('4. For Edge Functions, manually set CORS headers in your response');
+    }
+    
     connectionStatus.isConnected = false;
     connectionStatus.error = error.message;
     

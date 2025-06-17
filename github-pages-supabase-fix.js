@@ -15,17 +15,18 @@ if (isGitHubPages) {
   
   // Override fetch to handle CORS issues
   window.fetch = function(url, options = {}) {
-    // Add additional headers for GitHub Pages requests to Supabase
+    // Add debugging for Supabase requests
     if (url && url.toString().includes('supabase.co')) {
-      options.headers = options.headers || {};
-      options.headers['Origin'] = window.location.origin;
-      
-      // Add debugging for Supabase requests
       console.log('Supabase request from GitHub Pages:', {
         url: url.toString(),
         method: options.method || 'GET',
-        headers: options.headers
+        headers: options.headers || {}
       });
+      
+      // 2025 Update: Let Supabase handle CORS automatically
+      // DO NOT manually set Origin header as it may interfere with browser's CORS handling
+      // options.headers = options.headers || {};
+      // options.headers['Origin'] = window.location.origin;
     }
     
     return originalFetch(url, options)
@@ -52,9 +53,18 @@ if (isGitHubPages) {
           // Provide clearer error for CORS issues
           if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
             console.error(
-              'CORS error detected. Make sure the GitHub Pages domain is added to Supabase allowed origins: ' +
-              'https://qfkxftmzrfpskdtlolos.supabase.co/project/settings/api'
+              'CORS error detected! As of 2025, Supabase no longer uses dashboard settings for CORS. ' +
+              'Checking if this is a preflight issue or needs a proxy...'
             );
+            
+            // Log request details to help diagnose
+            console.error('Request details:', {
+              url: url.toString(),
+              method: options?.method || 'GET',
+              hasCustomHeaders: options?.headers && Object.keys(options.headers).some(h =>
+                !['content-type', 'authorization'].includes(h.toLowerCase())
+              )
+            });
           }
         }
         throw error;

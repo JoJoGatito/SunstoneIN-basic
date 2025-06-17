@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Setup RLS Policies</title>
+  
+  <!-- Tailwind CSS via CDN for UI styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Supabase Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Supabase Configuration -->
+  <script src="../supabase-config.js"></script>
+  
+  <!-- Authentication Module -->
+  <script src="./auth/auth.js"></script>
+  
+  <!-- RLS Policy Setup Script -->
+  <script src="./setup-admin-rls-policies.js"></script>
+
+  <style>
+    /* Custom scrollbar for results container */
+    #results::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    #results::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    
+    #results::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    
+    #results::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold mb-2">Admin - Row Level Security Policies</h1>
+      <p class="text-gray-400">Set up RLS policies to restrict write operations to authenticated users only</p>
+    </header>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Authentication Panel -->
+      <div class="bg-gray-800 rounded-lg p-6 md:col-span-1">
+        <h2 class="text-xl font-bold mb-4">Authentication</h2>
+        
+        <!-- Login Form (visible when not authenticated) -->
+        <div id="login-form" class="mb-4">
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+            <input type="email" id="email" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
+          </div>
+          
+          <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+            <input type="password" id="password" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
+            <p id="login-error" class="text-red-500 text-sm mt-1 hidden"></p>
+          </div>
+          
+          <button id="login-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
+            Sign In
+          </button>
+        </div>
+        
+        <!-- User Info (visible when authenticated) -->
+        <div id="user-info" class="hidden">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="bg-blue-500 rounded-full w-10 h-10 flex items-center justify-center">
+              <span id="user-initials" class="text-white font-bold"></span>
+            </div>
+            <div>
+              <p id="user-email" class="font-medium"></p>
+              <p id="user-role" class="text-sm text-gray-400"></p>
+            </div>
+          </div>
+          
+          <button id="logout-button" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
+            Sign Out
+          </button>
+        </div>
+      </div>
+      
+      <!-- RLS Policy Panel -->
+      <div class="bg-gray-800 rounded-lg p-6 md:col-span-2">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">RLS Policies</h2>
+          
+          <button id="update-policies" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed">
+            Update Policies
+          </button>
+        </div>
+        
+        <div class="bg-gray-900 rounded-md p-4 mb-4">
+          <h3 class="font-bold mb-2">Policy Changes:</h3>
+          <ul class="list-disc list-inside text-sm text-gray-300 space-y-1">
+            <li>Keep read access for all users</li>
+            <li>Restrict INSERT operations to authenticated users</li>
+            <li>Restrict UPDATE operations to authenticated users</li>
+            <li>Restrict DELETE operations to authenticated users</li>
+          </ul>
+        </div>
+        
+        <div id="results" class="bg-gray-900 rounded-md p-4 h-64 overflow-y-auto">
+          <p class="text-gray-500 italic">Results will appear here...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const loginForm = document.getElementById('login-form');
+      const userInfo = document.getElementById('user-info');
+      const loginButton = document.getElementById('login-button');
+      const logoutButton = document.getElementById('logout-button');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const loginError = document.getElementById('login-error');
+      const userEmail = document.getElementById('user-email');
+      const userInitials = document.getElementById('user-initials');
+      const userRole = document.getElementById('user-role');
+      
+      // Show/hide elements based on authentication state
+      function updateUIForAuthState() {
+        if (window.Auth && window.Auth.isAuthenticated()) {
+          const user = window.Auth.getCurrentUser();
+          
+          // Update user info
+          if (user) {
+            userEmail.textContent = user.email;
+            userRole.textContent = user.role || 'Authenticated User';
+            
+            // Get initials for avatar
+            const initials = user.email
+              .split('@')[0]
+              .split('.')
+              .map(part => part.charAt(0).toUpperCase())
+              .join('')
+              .substring(0, 2);
+            
+            userInitials.textContent = initials;
+          }
+          
+          // Show/hide elements
+          loginForm.classList.add('hidden');
+          userInfo.classList.remove('hidden');
+        } else {
+          // Show/hide elements
+          loginForm.classList.remove('hidden');
+          userInfo.classList.add('hidden');
+          
+          // Clear any previous login error
+          loginError.classList.add('hidden');
+          loginError.textContent = '';
+        }
+      }
+      
+      // Handle login
+      loginButton.addEventListener('click', async function() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        
+        if (!email || !password) {
+          loginError.textContent = 'Please enter both email and password';
+          loginError.classList.remove('hidden');
+          return;
+        }
+        
+        // Show loading state
+        loginButton.disabled = true;
+        loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+        loginError.classList.add('hidden');
+        
+        try {
+          // Attempt to sign in
+          const result = await window.Auth.signIn(email, password);
+          
+          if (result.error) {
+            // Show error
+            loginError.textContent = result.error;
+            loginError.classList.remove('hidden');
+          } else {
+            // Clear form
+            emailInput.value = '';
+            passwordInput.value = '';
+          }
+        } catch (error) {
+          // Show error
+          loginError.textContent = error.message || 'Sign in failed';
+          loginError.classList.remove('hidden');
+        } finally {
+          // Reset button
+          loginButton.disabled = false;
+          loginButton.innerHTML = 'Sign In';
+        }
+      });
+      
+      // Handle logout
+      logoutButton.addEventListener('click', async function() {
+        // Show loading state
+        logoutButton.disabled = true;
+        logoutButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing Out...';
+        
+        try {
+          // Attempt to sign out
+          await window.Auth.signOut();
+        } catch (error) {
+          console.error('Sign out error:', error);
+        } finally {
+          // Reset button
+          logoutButton.disabled = false;
+          logoutButton.innerHTML = 'Sign Out';
+        }
+      });
+      
+      // Listen for auth state changes
+      if (window.Auth) {
+        window.Auth.addEventListener('onAuthStateChange', updateUIForAuthState);
+      }
+      
+      // Initialize UI based on current auth state
+      updateUIForAuthState();
+    });
+  </script>
+</body>
+</html>
