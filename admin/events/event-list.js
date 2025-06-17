@@ -307,8 +307,18 @@ function applyFiltersAndSort() {
     const bValue = b[currentSort.field];
     
     if (currentSort.field === 'date') {
-      const dateA = new Date(aValue);
-      const dateB = new Date(bValue);
+      // Improved date sorting logic with validation
+      let dateA = new Date(0); // Default to epoch start
+      let dateB = new Date(0);
+      
+      if (aValue && !isNaN(new Date(aValue).getTime())) {
+        dateA = new Date(aValue);
+      }
+      
+      if (bValue && !isNaN(new Date(bValue).getTime())) {
+        dateB = new Date(bValue);
+      }
+      
       return currentSort.direction === 'asc' ? dateA - dateB : dateB - dateA;
     }
     
@@ -389,8 +399,29 @@ function renderEventsTable() {
   
   // Add events to the table
   eventsToShow.forEach(event => {
-    const date = new Date(event.date);
-    const formattedDate = date.toLocaleDateString();
+    // Log the date value to help debug the issue
+    console.log(`Event ID ${event.id} date value:`, event.date);
+    
+    // Improved date parsing with validation
+    let formattedDate = 'Invalid date';
+    try {
+      if (event.date) {
+        // Try to parse the date more safely
+        const dateObj = new Date(event.date);
+        
+        // Check if date is valid before formatting
+        if (!isNaN(dateObj.getTime())) {
+          formattedDate = dateObj.toLocaleDateString();
+        } else {
+          console.error(`Invalid date format for event ${event.id}:`, event.date);
+        }
+      } else {
+        console.error(`Missing date for event ${event.id}`);
+      }
+    } catch (error) {
+      console.error(`Error parsing date for event ${event.id}:`, error);
+    }
+    
     const row = document.createElement('tr');
     row.className = 'hover:bg-gray-700';
     row.setAttribute('data-event-id', event.id);

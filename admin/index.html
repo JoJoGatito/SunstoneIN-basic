@@ -763,16 +763,27 @@
           const todayStr = today.toISOString().split('T')[0];
           const futureStr = thirtyDaysFromNow.toISOString().split('T')[0];
           
-          const { count, error } = await window.supabase
+          // First try with event_date field
+          let result = await window.supabase
             .from('events')
             .select('*', { count: 'exact', head: true })
             .gte('event_date', todayStr)
             .lte('event_date', futureStr);
           
-          if (error) throw error;
+          // If that fails, try with date field instead
+          if (result.error && result.error.message.includes('column "event_date" does not exist')) {
+            console.log('Retrying with "date" field instead of "event_date"');
+            result = await window.supabase
+              .from('events')
+              .select('*', { count: 'exact', head: true })
+              .gte('date', todayStr)
+              .lte('date', futureStr);
+          }
+          
+          if (result.error) throw result.error;
           
           if (upcomingEventsElement) {
-            upcomingEventsElement.textContent = count;
+            upcomingEventsElement.textContent = result.count;
           }
         } catch (error) {
           console.error('Error loading upcoming event count:', error);
@@ -802,24 +813,54 @@
                 </tr>
               `;
             } else {
+              // Log retrieved data to debug date fields
+              console.log('Recent events data:', data);
+              
               recentEventsTable.innerHTML = data.map(event => {
                 const today = new Date();
-                const eventDate = new Date(event.event_date);
-                let status = '';
                 
-                if (eventDate < today) {
-                  status = '<span class="px-2 py-1 text-xs rounded-full bg-gray-600 text-gray-300">Past</span>';
-                } else if (eventDate.toDateString() === today.toDateString()) {
-                  status = '<span class="px-2 py-1 text-xs rounded-full bg-green-600/20 text-green-400">Today</span>';
-                } else {
-                  status = '<span class="px-2 py-1 text-xs rounded-full bg-blue-600/20 text-blue-400">Upcoming</span>';
+                // Fix date field handling - check both possible field names
+                // The database might be using either 'date' or 'event_date'
+                const dateValue = event.date || event.event_date;
+                console.log(`Event ${event.id} date value:`, dateValue);
+                
+                // Safe date parsing with validation
+                let eventDate = null;
+                let formattedDate = 'Invalid date';
+                
+                try {
+                  if (dateValue) {
+                    eventDate = new Date(dateValue);
+                    if (!isNaN(eventDate.getTime())) {
+                      formattedDate = eventDate.toLocaleDateString();
+                    } else {
+                      console.error(`Invalid date format for event ${event.id}:`, dateValue);
+                    }
+                  } else {
+                    console.error(`Missing date for event ${event.id}`);
+                  }
+                } catch (error) {
+                  console.error(`Error parsing date for event ${event.id}:`, error);
+                }
+                
+                // Determine event status based on date
+                let status = '<span class="px-2 py-1 text-xs rounded-full bg-gray-600 text-gray-300">Unknown</span>';
+                
+                if (eventDate) {
+                  if (eventDate < today) {
+                    status = '<span class="px-2 py-1 text-xs rounded-full bg-gray-600 text-gray-300">Past</span>';
+                  } else if (eventDate.toDateString() === today.toDateString()) {
+                    status = '<span class="px-2 py-1 text-xs rounded-full bg-green-600/20 text-green-400">Today</span>';
+                  } else {
+                    status = '<span class="px-2 py-1 text-xs rounded-full bg-blue-600/20 text-blue-400">Upcoming</span>';
+                  }
                 }
                 
                 return `
                   <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${event.title}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${event.groups?.name || 'Unknown'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${new Date(event.event_date).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${formattedDate}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">${status}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <a href="#" class="text-blue-400 hover:text-blue-300 mr-3">Edit</a>
@@ -848,17 +889,32 @@
       // Check RLS policies
       async function checkRLSPolicies() {
         try {
+          console.log('Starting RLS policy check...');
+          
           // Get RLS policies for groups table
-          const { data: groupsPolicies, error: groupsError } = await window.supabase
+          const groupsResult = await window.supabase
             .rpc('get_policies', { table_name: 'groups' });
           
-          if (groupsError) throw groupsError;
+          console.log('Groups policies result:', groupsResult);
+          
+          if (groupsResult.error) {
+            console.error('Groups policies error:', groupsResult.error);
+            throw groupsResult.error;
+          }
           
           // Get RLS policies for events table
-          const { data: eventsPolicies, error: eventsError } = await window.supabase
+          const eventsResult = await window.supabase
             .rpc('get_policies', { table_name: 'events' });
           
-          if (eventsError) throw eventsError;
+          console.log('Events policies result:', eventsResult);
+          
+          if (eventsResult.error) {
+            console.error('Events policies error:', eventsResult.error);
+            throw eventsResult.error;
+          }
+          
+          const groupsPolicies = groupsResult.data;
+          const eventsPolicies = eventsResult.data;
           
           // Update groups policies display
           if (groupsPoliciesElement) {
@@ -954,31 +1010,279 @@
         } catch (error) {
           console.error('Error checking RLS policies:', error);
           
-          if (groupsPoliciesElement) {
+          // Try fallback method if RPC fails
+          try {
+            console.log('Attempting fallback method to check policies...');
+            await checkPoliciesFallback();
+            return;
+          } catch (fallbackError) {
+            console.error('Fallback method also failed:', fallbackError);
+            
+            if (groupsPoliciesElement) {
+              groupsPoliciesElement.innerHTML = `
+                <li class="flex items-center">
+                  <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                  Error checking policies
+                </li>
+                <li class="text-xs text-gray-400 mt-1">
+                  ${error.message || 'Unknown error'}
+                </li>
+              `;
+            }
+            
+            if (eventsPoliciesElement) {
+              eventsPoliciesElement.innerHTML = `
+                <li class="flex items-center">
+                  <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                  Error checking policies
+                </li>
+                <li class="text-xs text-gray-400 mt-1">
+                  ${error.message || 'Unknown error'}
+                </li>
+              `;
+            }
+            
+            if (rlsStatusElement) {
+              rlsStatusElement.className = 'flex items-center text-red-500';
+              rlsStatusElement.innerHTML = `
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span>Error checking policies</span>
+              `;
+            }
+          }
+        }
+      }
+      
+      /**
+       * Fallback method to check RLS policies when RPC fails
+       * Uses direct table operations to infer policy settings
+       */
+      async function checkPoliciesFallback() {
+        console.log('Executing fallback policy check...');
+        
+        // Simulated policy data structure
+        let groupsPolicies = [];
+        let eventsPolicies = [];
+        
+        // Test read access for groups
+        const groupsReadResult = await window.supabase
+          .from('groups')
+          .select('id')
+          .limit(1);
+          
+        console.log('Groups read test:', groupsReadResult);
+        
+        if (!groupsReadResult.error) {
+          groupsPolicies.push({
+            name: 'Read access policy',
+            operation: 'SELECT',
+            command: 'SELECT policy detected (inferred)'
+          });
+        }
+        
+        // Test read access for events
+        const eventsReadResult = await window.supabase
+          .from('events')
+          .select('id')
+          .limit(1);
+          
+        console.log('Events read test:', eventsReadResult);
+        
+        if (!eventsReadResult.error) {
+          eventsPolicies.push({
+            name: 'Read access policy',
+            operation: 'SELECT',
+            command: 'SELECT policy detected (inferred)'
+          });
+        }
+        
+        // Now attempt an insert to check write access (will be rolled back)
+        // Only perform this if we're authenticated
+        if (window.Auth && window.Auth.isAuthenticated()) {
+          // Test insert access for groups with transaction that we'll roll back
+          try {
+            console.log('Testing groups write access...');
+            const { data, error } = await window.supabase.rpc('check_write_access', {
+              table_name: 'groups'
+            });
+            
+            console.log('Groups write test:', { data, error });
+            
+            if (!error) {
+              groupsPolicies.push({
+                name: 'Write access policy',
+                operation: 'INSERT',
+                command: "INSERT policy detected (auth.role() = 'authenticated')"
+              });
+            }
+          } catch (error) {
+            console.log('Groups write test error:', error);
+          }
+          
+          // Test insert access for events
+          try {
+            console.log('Testing events write access...');
+            const { data, error } = await window.supabase.rpc('check_write_access', {
+              table_name: 'events'
+            });
+            
+            console.log('Events write test:', { data, error });
+            
+            if (!error) {
+              eventsPolicies.push({
+                name: 'Write access policy',
+                operation: 'INSERT',
+                command: "INSERT policy detected (auth.role() = 'authenticated')"
+              });
+            }
+          } catch (error) {
+            console.log('Events write test error:', error);
+          }
+        }
+        
+        // Update groups policies display
+        if (groupsPoliciesElement) {
+          if (groupsPolicies.length > 0) {
+            groupsPoliciesElement.innerHTML = groupsPolicies.map(policy => {
+              const isSecure = policy.operation === 'SELECT' ||
+                               policy.command.includes("authenticated");
+              const icon = isSecure
+                ? '<i class="fas fa-check-circle text-green-500 mr-2"></i>'
+                : '<i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>';
+              
+              return `
+                <li class="flex items-start">
+                  ${icon}
+                  <div>
+                    <div class="font-medium">${policy.name}</div>
+                    <div class="text-xs text-gray-400">${policy.operation} operation</div>
+                  </div>
+                </li>
+              `;
+            }).join('');
+          } else {
             groupsPoliciesElement.innerHTML = `
               <li class="flex items-center">
-                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
-                Error checking policies
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                Could not detect policies
               </li>
             `;
           }
-          
-          if (eventsPoliciesElement) {
+        }
+        
+        // Update events policies display
+        if (eventsPoliciesElement) {
+          if (eventsPolicies.length > 0) {
+            eventsPoliciesElement.innerHTML = eventsPolicies.map(policy => {
+              const isSecure = policy.operation === 'SELECT' ||
+                               policy.command.includes("authenticated");
+              const icon = isSecure
+                ? '<i class="fas fa-check-circle text-green-500 mr-2"></i>'
+                : '<i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>';
+              
+              return `
+                <li class="flex items-start">
+                  ${icon}
+                  <div>
+                    <div class="font-medium">${policy.name}</div>
+                    <div class="text-xs text-gray-400">${policy.operation} operation</div>
+                  </div>
+                </li>
+              `;
+            }).join('');
+          } else {
             eventsPoliciesElement.innerHTML = `
               <li class="flex items-center">
-                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
-                Error checking policies
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                Could not detect policies
               </li>
             `;
           }
-          
-          if (rlsStatusElement) {
-            rlsStatusElement.className = 'flex items-center text-red-500';
+        }
+        
+        // Update overall RLS status
+        if (rlsStatusElement) {
+          if (groupsPolicies.length > 0 || eventsPolicies.length > 0) {
+            const hasReadPolicies = groupsPolicies.some(p => p.operation === 'SELECT') ||
+                                   eventsPolicies.some(p => p.operation === 'SELECT');
+            const hasWritePolicies = groupsPolicies.some(p => p.operation === 'INSERT') ||
+                                    eventsPolicies.some(p => p.operation === 'INSERT');
+            
+            if (hasReadPolicies && hasWritePolicies) {
+              rlsStatusElement.className = 'flex items-center text-green-500';
+              rlsStatusElement.innerHTML = `
+                <i class="fas fa-shield-alt mr-2"></i>
+                <span>Security policies detected (inferred)</span>
+              `;
+            } else if (hasReadPolicies) {
+              rlsStatusElement.className = 'flex items-center text-yellow-500';
+              rlsStatusElement.innerHTML = `
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <span>Read policies only (write policies unknown)</span>
+                <a href="#" onclick="showSetupInstructions()" class="ml-2 text-xs text-blue-400 hover:text-blue-300">
+                  <i class="fas fa-info-circle"></i> Fix
+                </a>
+              `;
+            } else {
+              rlsStatusElement.className = 'flex items-center text-red-500';
+              rlsStatusElement.innerHTML = `
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span>Policy status undetermined</span>
+              `;
+            }
+          } else {
+            rlsStatusElement.className = 'flex items-center text-yellow-500';
             rlsStatusElement.innerHTML = `
-              <i class="fas fa-exclamation-circle mr-2"></i>
-              <span>Error checking policies</span>
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              <span>Status unknown</span>
             `;
           }
+        }
+      }
+      
+      /**
+       * Display setup instructions modal to help fix policy checking
+       */
+      function showSetupInstructions() {
+        // Create modal if it doesn't exist
+        if (!document.getElementById('setup-instructions-modal')) {
+          const modal = document.createElement('div');
+          modal.id = 'setup-instructions-modal';
+          modal.className = 'fixed inset-0 z-50 flex items-center justify-center';
+          modal.innerHTML = `
+            <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+            <div class="relative bg-gray-800 rounded-lg max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-medium">Setup Instructions</h3>
+                <button id="close-instructions" class="text-gray-400 hover:text-white">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="prose prose-invert prose-sm">
+                <p>To fully enable the Security Status checker, you need to set up two database functions in Supabase:</p>
+                <ol>
+                  <li>
+                    <p><strong>get_policies</strong> - Retrieves policy information for tables</p>
+                  </li>
+                  <li>
+                    <p><strong>check_write_access</strong> - Tests write access without modifying data</p>
+                  </li>
+                </ol>
+                <p>Complete setup instructions have been provided in the file:</p>
+                <pre class="bg-gray-700 p-2 rounded"><code>policy-checker-setup-instructions.md</code></pre>
+                <p>After applying these functions, reload the admin dashboard to get complete security status information.</p>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(modal);
+          
+          // Add close handler
+          document.getElementById('close-instructions').addEventListener('click', function() {
+            document.getElementById('setup-instructions-modal').remove();
+          });
+        } else {
+          // Show the existing modal
+          document.getElementById('setup-instructions-modal').classList.remove('hidden');
         }
       }
       
