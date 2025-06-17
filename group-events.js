@@ -60,9 +60,6 @@ async function loadEventsFromJson() {
 }
 
 /**
- * Loads and displays featured events for each group
- */
-/**
  * Loads and displays featured events for each group using Supabase
  * Includes real-time updates, performance monitoring, and fallback handling
  * @async
@@ -74,8 +71,8 @@ async function loadGroupEvents() {
   const startTime = performance.now();
   let queryEndTime;
 
-  // Test Supabase connection first
   try {
+    // Test Supabase connection first
     const { data: connectionTest, error: connectionError } = await supabase
       .from('events')
       .select('count')
@@ -85,73 +82,44 @@ async function loadGroupEvents() {
       throw new Error(`Supabase connection failed: ${connectionError.message}`);
     }
     console.log('Supabase connection successful');
-  } catch (error) {
-    console.error('Connection test failed:', error);
-    await fallbackToJson();
-    return;
-  }
 
-  try {
     // Fetch featured events for all groups
-    let groupsWithEvents;
-    let usingFallback = false;
-
-    try {
-      // Try Supabase first if available
-      if (typeof supabase !== 'undefined') {
-        const { data: groupsData, error: groupsError } = await supabase
-          .from('groups')
-          .select(`
-            id,
-            events (
-              title,
-              date,
-              time
-            )
-          `)
-          .order('id');
-
-        if (!groupsError && groupsData) {
-          // Process Supabase data
-          groupsWithEvents = groupsData.map(group => {
-            const upcomingEvents = (group.events || [])
-              .filter(event => new Date(event.date) >= new Date())
-              .filter(event => event.title && event.date)
-              .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            return {
-              ...group,
-              events: upcomingEvents.slice(0, 1) // Get only the next upcoming event
-            };
-          });
-
-          // Log successful Supabase query
-          const queryEndTime = performance.now();
-          console.log(`Supabase query completed in ${queryEndTime - startTime}ms`);
-          if (queryEndTime - startTime > 500) {
-            console.warn('Performance warning: Query time exceeded 500ms threshold');
-          }
-        } else {
-          throw new Error('Supabase query failed');
-        }
-      } else {
-        throw new Error('Supabase not initialized');
-      }
-    } catch (error) {
-      console.warn('Supabase error, falling back to JSON:', error);
-      // Fall back to JSON
-      const jsonData = await loadEventsFromJson();
-      groupsWithEvents = jsonData.groups;
-      usingFallback = true;
+    if (typeof supabase === 'undefined') {
+      throw new Error('Supabase not initialized');
     }
 
-    if (error) throw error;
-    queryEndTime = performance.now();
-    console.log(`Query completed in ${queryEndTime - startTime}ms`);
+    // First get all groups
+    const { data: groups, error: groupsError } = await supabase
+      .from('groups')
+      .select('id, name')
+      .order('id');
 
-    // Validate and process the data
-    if (!groupsWithEvents || !Array.isArray(groupsWithEvents)) {
-      throw new Error('Invalid data structure: missing or malformed groups array');
+    if (groupsError) throw groupsError;
+    if (!groups) throw new Error('No groups found');
+
+    // Then get all upcoming events
+    const { data: events, error: eventsError } = await supabase
+      .from('events')
+      .select('*')
+      .gte('date', new Date().toISOString().split('T')[0])
+      .order('date', { ascending: true });
+
+    if (eventsError) throw eventsError;
+    if (!events) throw new Error('No events found');
+
+    // Combine groups with their events
+    const groupsWithEvents = groups.map(group => ({
+      ...group,
+      events: events
+        .filter(event => event.group_id === group.id)
+        .slice(0, 1) // Get only the next upcoming event
+    }));
+
+    // Log successful Supabase query
+    queryEndTime = performance.now();
+    console.log(`Supabase query completed in ${queryEndTime - startTime}ms`);
+    if (queryEndTime - startTime > 500) {
+      console.warn('Performance warning: Query time exceeded 500ms threshold');
     }
 
     // Process each group
@@ -207,7 +175,7 @@ async function loadGroupEvents() {
       totalTime: `${totalTime}ms`,
       queryTime: `${queryEndTime - startTime}ms`,
       renderTime: `${endTime - queryEndTime}ms`,
-      eventCount: groups.reduce((count, group) => count + (group.events?.length || 0), 0),
+      eventCount: groupsWithEvents.reduce((count, group) => count + (group.events?.length || 0), 0),
       timestamp: new Date().toISOString()
     });
 
