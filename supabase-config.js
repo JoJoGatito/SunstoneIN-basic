@@ -101,7 +101,8 @@ function initializeSupabase() {
     validateUrl(SUPABASE_URL);
     validateKey(SUPABASE_ANON_KEY);
     
-    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    // Enhanced config for GitHub Pages compatibility
+    const config = {
       auth: {
         autoRefreshToken: true,
         persistSession: true
@@ -114,7 +115,15 @@ function initializeSupabase() {
           'x-testing-mode': 'true' // Custom header for test environment
         }
       }
-    });
+    };
+    
+    // Add GitHub Pages specific headers if needed
+    if (window.GITHUB_PAGES_DOMAIN) {
+      console.log('Adding GitHub Pages specific configuration');
+      config.global.headers['x-github-pages-domain'] = window.GITHUB_PAGES_DOMAIN;
+    }
+    
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
     
     // Verify the client was created successfully
     if (!client) {
