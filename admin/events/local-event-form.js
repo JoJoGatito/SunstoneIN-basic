@@ -1,13 +1,13 @@
 // State management
 let currentEvent = null;
-let allGroups = [];
 let isEditMode = false;
+let imageFile = null;
 
 /**
- * Initializes the event form component
+ * Initializes the local event form component
  */
-function initializeEventForm() {
-  console.log("initializeEventForm called");
+function initializeLocalEventForm() {
+  console.log("initializeLocalEventForm called");
   
   // Set up form submission
   const eventForm = document.getElementById('event-form');
@@ -23,8 +23,51 @@ function initializeEventForm() {
     validateField('event-date', 'date-error');
   });
   
-  document.getElementById('event-group')?.addEventListener('change', function() {
-    validateField('event-group', 'group-error');
+  document.getElementById('event-location')?.addEventListener('input', function() {
+    validateField('event-location', 'location-error');
+  });
+  
+  document.getElementById('community-focus')?.addEventListener('change', function() {
+    validateField('community-focus', 'community-focus-error');
+  });
+  
+  document.getElementById('sensory-rating')?.addEventListener('change', function() {
+    validateField('sensory-rating', 'sensory-rating-error');
+  });
+
+  // Set up image upload handling
+  const imageInput = document.getElementById('event-image-input');
+  const dropZone = imageInput?.closest('div');
+  const imagePreview = document.getElementById('image-preview');
+  const previewImg = document.getElementById('preview-img');
+
+  // Handle file selection
+  imageInput?.addEventListener('change', function(e) {
+    handleImageSelection(e.target.files[0]);
+  });
+
+  // Handle drag and drop
+  dropZone?.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.add('border-blue-500');
+  });
+
+  dropZone?.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.remove('border-blue-500');
+  });
+
+  dropZone?.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.remove('border-blue-500');
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      handleImageSelection(file);
+    }
   });
   
   // Set up auth listeners
@@ -43,9 +86,35 @@ function initializeEventForm() {
   
   if (eventId) {
     isEditMode = true;
-    document.getElementById('page-title').textContent = 'Edit Event';
+    document.getElementById('page-title').textContent = 'Edit Local Event';
     document.getElementById('save-button-text').textContent = 'Update Event';
   }
+}
+
+/**
+ * Handles image file selection
+ */
+function handleImageSelection(file) {
+  if (!file) return;
+  
+  const allowedTypes = ['image/webp', 'image/png', 'image/jpeg', 'image/gif'];
+  if (!allowedTypes.includes(file.type)) {
+    showToast('Please upload a WebP, PNG, JPG, or GIF file', 'error');
+    return;
+  }
+  
+  imageFile = file;
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+    const preview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    
+    preview.classList.remove('hidden');
+    previewImg.src = e.target.result;
+  };
+  
+  reader.readAsDataURL(file);
 }
 
 /**
@@ -60,9 +129,6 @@ function handleAuthStateChange(session) {
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('not-authenticated').classList.add('hidden');
     document.getElementById('form-content').classList.remove('hidden');
-    
-    // Load groups for dropdown
-    loadGroups();
     
     // If in edit mode, load event data
     if (isEditMode) {
@@ -102,9 +168,35 @@ function validateField(fieldId, errorId) {
 function validateForm() {
   const isTitleValid = validateField('event-title', 'title-error');
   const isDateValid = validateField('event-date', 'date-error');
-  const isGroupValid = validateField('event-group', 'group-error');
+  const isLocationValid = validateField('event-location', 'location-error');
+  const isCommunityFocusValid = validateField('community-focus', 'community-focus-error');
+  const isSensoryRatingValid = validateField('sensory-rating', 'sensory-rating-error');
   
-  return isTitleValid && isDateValid && isGroupValid;
+  return isTitleValid && isDateValid && isLocationValid && 
+         isCommunityFocusValid && isSensoryRatingValid;
+}
+
+/**
+ * Uploads an image to Supabase Storage
+ */
+async function uploadEventImage(file) {
+  if (!file) return null;
+  
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Date.now()}.${fileExt}`;
+  const filePath = `${fileName}`;
+  
+  const { data, error } = await window.supabase.storage
+    .from('local-event-images')
+    .upload(filePath, file);
+    
+  if (error) throw error;
+  
+  const { data: { publicUrl } } = window.supabase.storage
+    .from('local-event-images')
+    .getPublicUrl(filePath);
+    
+  return publicUrl;
 }
 
 /**
@@ -120,19 +212,16 @@ async function handleFormSubmit(e) {
     return;
   }
   
-  // Double-check group selection specifically
-  const groupValue = document.getElementById('event-group').value;
-  if (!groupValue || groupValue === "") {
-    console.error("Group validation failed despite form validation passing");
-    document.getElementById('group-error').classList.remove('hidden');
-    showToast('Please select a group for this event', 'error');
-    return;
-  }
-  
   // Show loading state
   toggleSaveButton(true);
   
   try {
+    // Upload image if present
+    let imageUrl = null;
+    if (imageFile) {
+      imageUrl = await uploadEventImage(imageFile);
+    }
+    
     // Get raw date value
     const dateInput = document.getElementById('event-date').value;
     console.log("Raw date input:", dateInput);
@@ -148,12 +237,13 @@ async function handleFormSubmit(e) {
     const eventData = {
       title: document.getElementById('event-title').value.trim(),
       date: formattedDate,
-      time: document.getElementById('event-time').value || null,
+      start_time: document.getElementById('event-time').value || null,
       end_time: document.getElementById('event-end-time').value || null,
-      location: document.getElementById('event-location').value.trim() || null,
+      location: document.getElementById('event-location').value.trim(),
       description: document.getElementById('event-description').value.trim() || null,
-      group_id: groupValue,
-      is_featured: document.getElementById('event-featured').checked
+      community_focus: document.getElementById('community-focus').value,
+      sensory_rating: document.getElementById('sensory-rating').value,
+      image_url: imageUrl
     };
     
     console.log("Submitting event data:", JSON.stringify(eventData));
@@ -161,7 +251,7 @@ async function handleFormSubmit(e) {
     // Save to Supabase
     if (isEditMode) {
       const { data, error } = await window.supabase
-        .from('events')
+        .from('local_events')
         .update(eventData)
         .eq('id', currentEvent.id)
         .select();
@@ -170,7 +260,7 @@ async function handleFormSubmit(e) {
       showToast('Event updated successfully', 'success');
     } else {
       const { data, error } = await window.supabase
-        .from('events')
+        .from('local_events')
         .insert([eventData])
         .select();
         
@@ -191,46 +281,12 @@ async function handleFormSubmit(e) {
 }
 
 /**
- * Loads groups for the dropdown
- */
-async function loadGroups() {
-  try {
-    const { data: groups, error } = await window.supabase
-      .from('groups')
-      .select('id, name')
-      .order('name');
-      
-    if (error) throw error;
-    
-    allGroups = groups || [];
-    const groupSelect = document.getElementById('event-group');
-    
-    // Clear existing options except the first one
-    while (groupSelect.options.length > 1) {
-      groupSelect.remove(1);
-    }
-    
-    // Add groups
-    allGroups.forEach(group => {
-      const option = document.createElement('option');
-      option.value = group.id;
-      option.textContent = group.name;
-      groupSelect.appendChild(option);
-    });
-    
-  } catch (error) {
-    console.error('Error loading groups:', error);
-    showToast('Error loading groups: ' + (error.message || 'Unknown error'), 'error');
-  }
-}
-
-/**
  * Loads event data for editing
  */
 async function loadEvent(eventId) {
   try {
     const { data: event, error } = await window.supabase
-      .from('events')
+      .from('local_events')
       .select('*')
       .eq('id', eventId)
       .single();
@@ -242,12 +298,20 @@ async function loadEvent(eventId) {
     // Populate form fields
     document.getElementById('event-title').value = event.title || '';
     document.getElementById('event-date').value = event.date || '';
-    document.getElementById('event-time').value = event.time || '';
+    document.getElementById('event-time').value = event.start_time || '';
     document.getElementById('event-end-time').value = event.end_time || '';
     document.getElementById('event-location').value = event.location || '';
-    document.getElementById('event-group').value = event.group_id || '';
-    document.getElementById('event-featured').checked = event.is_featured || false;
+    document.getElementById('community-focus').value = event.community_focus || '';
+    document.getElementById('sensory-rating').value = event.sensory_rating || '';
     document.getElementById('event-description').value = event.description || '';
+
+    // Show image preview if exists
+    if (event.image_url) {
+      const preview = document.getElementById('image-preview');
+      const previewImg = document.getElementById('preview-img');
+      preview.classList.remove('hidden');
+      previewImg.src = event.image_url;
+    }
     
   } catch (error) {
     console.error('Error loading event:', error);

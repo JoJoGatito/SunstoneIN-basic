@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resource Form</title>
+  
+  <!-- Tailwind CSS via CDN for UI styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Supabase Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Supabase Configuration -->
+  <script src="../../src/js/config/supabase-config.js"></script>
+  
+  <!-- Authentication Module -->
+  <script src="../assets/js/auth.js"></script>
+
+  <!-- Resource Form Module -->
+  <script src="./resource-form.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gray-800 py-4 px-6 flex items-center justify-between">
+      <h1 class="text-xl font-bold" id="page-title">Add New Resource</h1>
+      <div class="flex items-center">
+        <span class="mr-4">
+          <span id="user-email" class="text-sm text-gray-300"></span>
+        </span>
+        <button id="logout-button" class="text-sm text-gray-300 hover:text-white">
+          Sign Out
+        </button>
+      </div>
+    </header>
+    
+    <!-- Main content -->
+    <main class="flex-1 p-6">
+      <!-- Authentication Message -->
+      <div id="not-authenticated" class="hidden flex flex-col items-center justify-center h-full text-center">
+        <div class="bg-red-500/20 p-6 rounded-lg mb-6 inline-block">
+          <i class="fas fa-lock text-red-500 text-5xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Authentication Required</h2>
+        <p class="text-gray-400 mb-6 max-w-md">You need to sign in to access the resource form.</p>
+        <a href="../auth/login.html" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition duration-150 ease-in-out">
+          Sign In
+        </a>
+      </div>
+      
+      <!-- Form Content -->
+      <div id="form-content" class="hidden">
+        <form id="resource-form" class="space-y-4">
+          <input type="hidden" id="resource-id">
+          
+          <!-- Name Field -->
+          <div>
+            <label for="resource-name" class="block text-sm font-medium text-gray-400 mb-1">Resource Name <span class="text-red-500">*</span></label>
+            <input type="text" id="resource-name" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+            <p id="name-error" class="mt-1 text-sm text-red-500 hidden">Please enter a name</p>
+          </div>
+          
+          <!-- Category Selection -->
+          <div>
+            <label for="resource-category" class="block text-sm font-medium text-gray-400 mb-1">Category <span class="text-red-500">*</span></label>
+            <select id="resource-category" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+              <option value="">Select a category</option>
+              <!-- Categories will be populated dynamically -->
+            </select>
+            <p id="category-error" class="mt-1 text-sm text-red-500 hidden">Please select a category</p>
+          </div>
+          
+          <!-- Description Field -->
+          <div>
+            <label for="resource-description" class="block text-sm font-medium text-gray-400 mb-1">Description <span class="text-red-500">*</span></label>
+            <textarea id="resource-description" rows="4" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500" required></textarea>
+            <p id="description-error" class="mt-1 text-sm text-red-500 hidden">Please enter a description</p>
+          </div>
+          
+          <!-- Contact Information -->
+          <div class="space-y-4">
+            <h3 class="text-sm font-medium text-gray-400">Contact Information <span class="text-red-500">*</span></h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="contact-email" class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                <input type="email" id="contact-email" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label for="contact-phone" class="block text-sm font-medium text-gray-400 mb-1">Phone</label>
+                <input type="tel" id="contact-phone" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+            <p id="contact-error" class="mt-1 text-sm text-red-500 hidden">Please provide either an email or phone number</p>
+          </div>
+          
+          <!-- Hours Information -->
+          <div class="space-y-4">
+            <h3 class="text-sm font-medium text-gray-400">Hours of Operation</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="hours-weekday" class="block text-sm font-medium text-gray-400 mb-1">Weekday Hours</label>
+                <input type="text" id="hours-weekday" placeholder="e.g., Mon-Fri: 9am-5pm" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500">
+              </div>
+              <div>
+                <label for="hours-weekend" class="block text-sm font-medium text-gray-400 mb-1">Weekend Hours</label>
+                <input type="text" id="hours-weekend" placeholder="e.g., Sat-Sun: 10am-4pm" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Active Toggle -->
+          <div class="flex items-center">
+            <input type="checkbox" id="resource-active" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700" checked>
+            <label for="resource-active" class="ml-2 block text-sm text-gray-400">Active Resource</label>
+          </div>
+          
+          <!-- Form Actions -->
+          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+            <a href="../dashboard.html" class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md">
+              Cancel
+            </a>
+            <button type="submit" id="save-button" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center">
+              <span id="save-button-text">Save Resource</span>
+              <span id="save-spinner" class="ml-2 hidden">
+                <i class="fas fa-spinner fa-spin"></i>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Loading Spinner -->
+      <div id="loading" class="flex flex-col items-center justify-center h-64">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <p class="mt-4 text-gray-400">Loading...</p>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeResourceForm();
+    });
+  </script>
+</body>
+</html>

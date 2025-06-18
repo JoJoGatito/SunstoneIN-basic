@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events Management</title>
+  
+  <!-- Tailwind CSS via CDN for UI styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Supabase Client Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Supabase Configuration -->
+  <script src="../src/js/config/supabase-config.js"></script>
+  
+  <!-- Authentication Module -->
+  <script src="./assets/js/auth.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gray-800 py-4 px-6 flex items-center justify-between">
+      <h1 class="text-xl font-bold">Events Management</h1>
+      <div class="flex items-center">
+        <span class="mr-4">
+          <span id="user-email" class="text-sm text-gray-300"></span>
+        </span>
+        <button id="logout-button" class="text-sm text-gray-300 hover:text-white">
+          Sign Out
+        </button>
+      </div>
+    </header>
+    
+    <!-- Main content -->
+    <main class="flex-1 p-6">
+      <!-- Authentication Message -->
+      <div id="not-authenticated" class="hidden flex flex-col items-center justify-center h-full text-center">
+        <div class="bg-red-500/20 p-6 rounded-lg mb-6 inline-block">
+          <i class="fas fa-lock text-red-500 text-5xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Authentication Required</h2>
+        <p class="text-gray-400 mb-6 max-w-md">You need to sign in to access the event management.</p>
+        <a href="./auth/login.html" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition duration-150 ease-in-out">
+          Sign In
+        </a>
+      </div>
+      
+      <!-- Events Content -->
+      <div id="events-content" class="hidden">
+        <!-- Tabs -->
+        <div class="mb-6">
+          <div class="border-b border-gray-700">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+              <button id="group-events-tab" class="border-blue-500 text-blue-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                Group Events
+              </button>
+              <button id="local-events-tab" class="border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                Local Events
+              </button>
+              <button id="resources-tab" class="border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                Resources
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Add Event Buttons -->
+        <div class="mb-6 flex justify-between items-center">
+          <h2 id="events-section-title" class="text-2xl font-bold">Group Events</h2>
+          <div class="flex space-x-4">
+            <a id="add-group-event-btn" href="./events/event-form.html" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center">
+              <i class="fas fa-plus mr-2"></i>
+              <span>Add Group Event</span>
+            </a>
+            <a id="add-local-event-btn" href="./events/local-event-form.html" class="hidden bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center">
+              <i class="fas fa-plus mr-2"></i>
+              <span>Add Local Event</span>
+            </a>
+            <a id="add-resource-btn" href="./resources/resource-form.html" class="hidden bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center">
+              <i class="fas fa-plus mr-2"></i>
+              <span>Add Resource</span>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Events Table -->
+        <div class="bg-gray-800 rounded-lg overflow-hidden shadow-md">
+          <table class="min-w-full divide-y divide-gray-700">
+            <thead class="bg-gray-700">
+              <tr>
+                <th scope="col" id="name-header" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Event Name</th>
+                <th scope="col" id="date-header" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Date</th>
+                <th scope="col" id="group-header" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Group</th>
+                <th scope="col" id="featured-header" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Featured</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="events-table" class="bg-gray-800 divide-y divide-gray-700">
+              <tr>
+                <td colspan="5" class="px-6 py-4 text-center text-gray-400">
+                  <div class="animate-pulse">Loading events...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Loading Spinner -->
+      <div id="loading" class="flex flex-col items-center justify-center h-64">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <p class="mt-4 text-gray-400">Loading...</p>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative bg-gray-800 rounded-lg max-w-md w-full p-6">
+      <div class="text-center mb-4">
+        <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+        <h3 class="text-xl font-medium">Confirm Delete</h3>
+        <p id="delete-message" class="text-gray-400 mt-2">Are you sure you want to delete this event?</p>
+      </div>
+      <div class="flex items-center justify-center space-x-4 mt-6">
+        <button id="delete-cancel" class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md">
+          Cancel
+        </button>
+        <button id="delete-confirm" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Current user state
+    let currentUser = null;
+    
+    // Events data
+    let allEvents = [];
+    let eventToDelete = null;
+    let currentTab = 'group'; // 'group', 'local', or 'resources'
+    
+    // Initialize when document is ready
+    let initialSessionCheckComplete = false;
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('[Events] Page loaded, waiting for auth initialization...');
+
+      // Set up tab switching
+      document.getElementById('group-events-tab')?.addEventListener('click', () => switchTab('group'));
+      document.getElementById('local-events-tab')?.addEventListener('click', () => switchTab('local'));
+      document.getElementById('resources-tab')?.addEventListener('click', () => switchTab('resources'));
+      
+      // Show loading initially
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('events-content').classList.add('hidden');
+      document.getElementById('not-authenticated').classList.add('hidden');
+      
+      // Wait for Auth to be available
+      while (!window.Auth) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      try {
+        // Get initial session
+        console.log('[Events] Checking initial session...');
+        const { data: { session } } = await window.supabase.auth.getSession();
+        console.log('[Events] Initial session check:', session ? 'Session exists' : 'No session');
+        
+        initialSessionCheckComplete = true;
+        
+        if (!session) {
+          console.log('[Events] No initial session found, redirecting to login...');
+          window.location.href = './auth/login.html';
+          return;
+        }
+        
+        // Setup auth listeners for future changes
+        window.supabase.auth.onAuthStateChange((event, newSession) => {
+          console.log('[Events] Auth event received:', event);
+          if (event === 'SIGNED_OUT') {
+            window.location.href = './auth/login.html';
+          } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+            handleAuthStateChange(newSession);
+          }
+        });
+        
+        // Initialize with current session
+        handleAuthStateChange(session);
+      } catch (error) {
+        console.error('[Events] Error during initialization:', error);
+        window.location.href = './auth/login.html';
+      }
+      
+      // Setup delete modal events
+      document.getElementById('delete-cancel')?.addEventListener('click', hideDeleteModal);
+      document.getElementById('delete-confirm')?.addEventListener('click', confirmDeleteEvent);
+      
+      // Set up logout button
+      document.getElementById('logout-button')?.addEventListener('click', function() {
+        window.supabase.auth.signOut().then(() => {
+          window.location.reload();
+        });
+      });
+    });
+    
+    // Handle authentication state changes
+    function handleAuthStateChange(session) {
+      console.log('[Events] Handling auth state change:', session ? 'Session exists' : 'No session');
+      
+      if (!initialSessionCheckComplete) {
+        console.log('[Events] Ignoring auth state change before initial check complete');
+        return;
+      }
+      
+      currentUser = session?.user || null;
+      
+      if (!currentUser) {
+        console.log('[Events] No user in session, redirecting to login...');
+        window.location.href = './auth/login.html';
+        return;
+      }
+      
+      // Update UI for authenticated user
+      document.getElementById('user-email').textContent = currentUser.email;
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('not-authenticated').classList.add('hidden');
+      document.getElementById('events-content').classList.remove('hidden');
+      
+      // Load events data
+      loadEvents();
+    }
+    
+    // Load events from Supabase
+    async function loadEvents() {
+      console.log('loadEvents called');
+      try {
+        // Show loading state
+        document.getElementById('events-table').innerHTML = `
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-center text-gray-400">
+              <div class="animate-pulse">Loading...</div>
+            </td>
+          </tr>
+        `;
+        
+        let query;
+        if (currentTab === 'resources') {
+          // Fetch resources with their categories
+          query = window.supabase
+            .from('resources')
+            .select('*, resource_categories(name)')
+            .order('name');
+        } else {
+          // Fetch events based on current tab
+          query = window.supabase
+            .from(currentTab === 'group' ? 'events' : 'local_events')
+            .select(currentTab === 'group' ? '*, groups(name)' : '*')
+            .order('date', { ascending: false });
+        }
+        
+        const { data, error } = await query;
+        if (error) throw error;
+        
+        allEvents = data || [];
+        
+        // Render events
+        renderEvents();
+        
+      } catch (error) {
+        console.error('Error loading events:', error);
+        document.getElementById('events-table').innerHTML = `
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-center text-red-400">
+              Error loading events: ${error.message || 'Unknown error'}
+            </td>
+          </tr>
+        `;
+      }
+    }
+    
+    // Render events table
+    function renderEvents() {
+      const tableBody = document.getElementById('events-table');
+      
+      // Clear table
+      tableBody.innerHTML = '';
+      
+      // Check if no events
+      if (allEvents.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-6 py-4 text-center text-gray-400">
+              No events found.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      // Add each event to the table
+      allEvents.forEach(item => {
+        // Create row
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-gray-700';
+        
+        if (currentTab === 'resources') {
+          // Render resource row
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-white">${item.name}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-300">${item.resource_categories?.name || 'Uncategorized'}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-300">${item.contact?.email || item.contact?.phone || 'No contact info'}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.is_active ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-300'}">
+                ${item.is_active ? 'Active' : 'Inactive'}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <div class="flex justify-end space-x-2">
+                <a href="./resources/resource-form.html?id=${item.id}" class="text-blue-400 hover:text-blue-300">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <button class="delete-event-btn text-red-400 hover:text-red-300" data-event-id="${item.id}" data-event-title="${item.name}">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </td>
+          `;
+        } else {
+          // Format date for events
+          let formattedDate = 'Invalid date';
+          try {
+            if (item.date) {
+              const dateObj = new Date(item.date);
+              if (!isNaN(dateObj.getTime())) {
+                formattedDate = dateObj.toLocaleDateString();
+              }
+            }
+          } catch (error) {
+            console.error(`Error parsing date for event ${item.id}:`, error);
+          }
+          
+          // Render event row
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-white">${item.title}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-300">${formattedDate}</div>
+              <div class="text-sm text-gray-400">
+                ${item.time ? item.time : 'No time specified'}
+                ${item.time && item.end_time ? ' - ' + item.end_time : ''}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-300">${item.groups?.name || 'Unknown Group'}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.is_featured ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-300'}">
+                ${item.is_featured ? 'Featured' : 'Not Featured'}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <div class="flex justify-end space-x-2">
+                <a href="./events/${currentTab === 'group' ? 'event-form' : 'local-event-form'}.html?id=${item.id}" class="text-blue-400 hover:text-blue-300">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <button class="delete-event-btn text-red-400 hover:text-red-300" data-event-id="${item.id}" data-event-title="${item.title}">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </td>
+          `;
+        }
+        
+        tableBody.appendChild(row);
+      });
+      
+      // Add delete event listeners
+      document.querySelectorAll('.delete-event-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const eventId = this.getAttribute('data-event-id');
+          const eventTitle = this.getAttribute('data-event-title');
+          showDeleteModal(eventId, eventTitle);
+        });
+      });
+    }
+    
+    // Show delete confirmation modal
+    function showDeleteModal(eventId, eventTitle) {
+      eventToDelete = allEvents.find(event => event.id.toString() === eventId.toString());
+      
+      const modal = document.getElementById('delete-modal');
+      const message = document.getElementById('delete-message');
+      
+      if (eventToDelete) {
+
+        modal.classList.remove('hidden');
+      }
+    }
+    
+    // Hide delete confirmation modal
+    function hideDeleteModal() {
+      document.getElementById('delete-modal').classList.add('hidden');
+      eventToDelete = null;
+    }
+    
+    // Confirm and execute event deletion
+    async function confirmDeleteEvent() {
+      if (!eventToDelete) return;
+      
+      try {
+        // Delete the event from Supabase
+        const { error } = await window.supabase
+          .from(currentTab === 'resources' ? 'resources' : (currentTab === 'group' ? 'events' : 'local_events'))
+          .delete()
+          .eq('id', eventToDelete.id);
+          
+        if (error) throw error;
+        
+        // Remove from local data
+        allEvents = allEvents.filter(e => e.id !== eventToDelete.id);
+        
+        // Re-render events
+        renderEvents();
+        
+        // Show success message
+        showToast('Event deleted successfully');
+        
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        showToast('Error deleting event: ' + (error.message || 'Unknown error'), 'error');
+      }
+      
+      // Hide modal
+      hideDeleteModal();
+    }
+    
+    // Show toast notification
+    function showToast(message, type = 'success') {
+      // Check if toast container exists, create if not
+      let toastContainer = document.getElementById('toast-container');
+      
+      if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        toastContainer.className = 'fixed bottom-4 right-4 z-50 flex flex-col space-y-2';
+        document.body.appendChild(toastContainer);
+      }
+      
+      // Create toast element
+      const toast = document.createElement('div');
+      const bgClass = type === 'success' ? 'bg-green-800 text-green-100' :
+                     type === 'error' ? 'bg-red-800 text-red-100' :
+                     'bg-blue-800 text-blue-100';
+      toast.className = 'flex items-center p-4 mb-2 rounded-lg transition-all duration-300 ' + bgClass;
+      
+      // Add icon based on type
+      const iconName = type === 'success' ? 'check-circle' :
+                      type === 'error' ? 'exclamation-circle' :
+                      'information-circle';
+                      
+      toast.innerHTML = '<i class="fas fa-' + iconName + ' mr-2"></i><span>' + message + '</span>';
+      
+      // Add to container
+      toastContainer.appendChild(toast);
+      
+      // Remove after delay
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => {
+          toast.remove();
+          
+          // Remove container if empty
+          if (toastContainer.children.length === 0) {
+            toastContainer.remove();
+          }
+        }, 300);
+      }, 3000);
+    }
+    // Handle tab switching
+    function switchTab(tab) {
+      currentTab = tab;
+
+      // Update tab styles
+      const groupTab = document.getElementById('group-events-tab');
+      const localTab = document.getElementById('local-events-tab');
+      
+      const resourcesTab = document.getElementById('resources-tab');
+      const addResourceBtn = document.getElementById('add-resource-btn');
+      const nameHeader = document.getElementById('name-header');
+      const dateHeader = document.getElementById('date-header');
+      const groupHeader = document.getElementById('group-header');
+      const featuredHeader = document.getElementById('featured-header');
+
+      // Reset all tabs to default state
+      [groupTab, localTab, resourcesTab].forEach(tab => {
+        tab.className = 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+      });
+
+      // Hide all add buttons
+      [document.getElementById('add-group-event-btn'), document.getElementById('add-local-event-btn'), addResourceBtn].forEach(btn => {
+        btn.classList.add('hidden');
+      });
+
+      // Update UI based on selected tab
+      if (tab === 'group') {
+        groupTab.className = 'border-blue-500 text-blue-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+        document.getElementById('events-section-title').textContent = 'Group Events';
+        document.getElementById('add-group-event-btn').classList.remove('hidden');
+        
+        // Update table headers for events
+        nameHeader.textContent = 'Event Name';
+        dateHeader.textContent = 'Date';
+        groupHeader.textContent = 'Group';
+        featuredHeader.textContent = 'Featured';
+      } else if (tab === 'local') {
+        localTab.className = 'border-blue-500 text-blue-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+        document.getElementById('events-section-title').textContent = 'Local Events';
+        document.getElementById('add-local-event-btn').classList.remove('hidden');
+        
+        // Update table headers for events
+        nameHeader.textContent = 'Event Name';
+        dateHeader.textContent = 'Date';
+        groupHeader.textContent = 'Group';
+        featuredHeader.textContent = 'Featured';
+      } else if (tab === 'resources') {
+        resourcesTab.className = 'border-blue-500 text-blue-500 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+        document.getElementById('events-section-title').textContent = 'Resources';
+        addResourceBtn.classList.remove('hidden');
+        
+        // Update table headers for resources
+        nameHeader.textContent = 'Resource Name';
+        dateHeader.textContent = 'Category';
+        groupHeader.textContent = 'Contact';
+        featuredHeader.textContent = 'Active';
+      }
+
+      // Reload events for the new tab
+      loadEvents();
+    }
+  </script>
+</body>
+</html> 

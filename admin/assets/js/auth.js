@@ -50,6 +50,7 @@ async function initializeAuth() {
 
     // Set up auth state change listener
     window.supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[Auth] Auth state change event:', event, 'Session:', session ? 'exists' : 'null');
       handleAuthStateChange(event, session);
     });
 
@@ -70,22 +71,54 @@ async function initializeAuth() {
  */
 async function refreshAuthState() {
   try {
+    console.log('[Auth] Refreshing auth state...');
     updateAuthState({ loading: true, error: null });
     
     const { data, error } = await window.supabase.auth.getSession();
+    
+    console.log('[Auth] Get session result:', {
+      hasData: !!data,
+      hasSession: !!data?.session,
+      hasUser: !!data?.session?.user,
+      accessToken: !!data?.session?.access_token,
+      expiresAt: data?.session?.expires_at,
+      error: error?.message
+    });
     
     if (error) {
       throw error;
     }
     
     if (data?.session) {
-      updateAuthState({ 
-        user: data.session.user,
-        session: data.session,
-        loading: false
+      // Check token expiration
+      const tokenExpiry = data.session.expires_at * 1000; // Convert to milliseconds
+      const now = Date.now();
+      const timeUntilExpiry = tokenExpiry - now;
+      
+      console.log('[Auth] Token status:', {
+        expiresAt: new Date(tokenExpiry).toISOString(),
+        timeUntilExpiry: Math.floor(timeUntilExpiry / 1000) + ' seconds',
+        isExpired: timeUntilExpiry <= 0
       });
+
+      if (timeUntilExpiry <= 0) {
+        console.log('[Auth] Token expired, clearing state');
+        updateAuthState({
+          user: null,
+          session: null,
+          loading: false,
+          error: 'Session expired'
+        });
+      } else {
+        updateAuthState({
+          user: data.session.user,
+          session: data.session,
+          loading: false
+        });
+      }
     } else {
-      updateAuthState({ 
+      console.log('[Auth] No session found');
+      updateAuthState({
         user: null,
         session: null,
         loading: false
@@ -110,7 +143,11 @@ async function refreshAuthState() {
  * @private
  */
 function handleAuthStateChange(event, session) {
-  console.log('Auth state changed:', event);
+  console.log('[Auth] Auth state changed:', event, 'Session details:', {
+    hasUser: !!session?.user,
+    accessToken: !!session?.access_token,
+    expiresAt: session?.expires_at
+  });
   
   // Update internal state
   if (event === 'SIGNED_IN') {
@@ -183,8 +220,16 @@ function notifyListeners(eventType, data) {
  * @returns {Function} A function to remove the listener
  */
 function addEventListener(eventType, callback) {
+  // Handle browser standard events like visibilitychange
+  if (eventType === 'visibilitychange') {
+    // Delegate to the standard browser event system
+    document.addEventListener('visibilitychange', callback);
+    // Return a function to remove the listener
+    return () => document.removeEventListener('visibilitychange', callback);
+  }
+  
   if (!listeners[eventType]) {
-    console.error(`Invalid event type: ${eventType}`);
+    console.warn(`Unsupported auth event type: ${eventType}`);
     return () => {};
   }
   
@@ -208,6 +253,7 @@ function addEventListener(eventType, callback) {
  */
 async function signInWithEmail(email, password) {
   try {
+    console.log('[Auth] Attempting sign in...');
     updateAuthState({ loading: true, error: null });
     
     const { data, error } = await window.supabase.auth.signInWithPassword({
@@ -388,5 +434,19 @@ window.Auth = {
   isAuthenticated,
   getCurrentUser,
   getCurrentSession,
-  getToken
+  getToken,
+  
+  // Debug info
+  _debugState: () => {
+    console.log('[Auth Debug] Current state:', {
+      authState,
+      listeners,
+      isAuthenticated: isAuthenticated(),
+      currentUser: getCurrentUser(),
+      hasSession: !!getCurrentSession()
+    });
+  }
 };
+
+// Log initial state after setup
+console.log('[Auth] Module initialized');

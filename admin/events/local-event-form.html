@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Form</title>
+  <title>Local Event Form</title>
   
   <!-- Tailwind CSS via CDN for UI styling -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,13 +21,13 @@
   <script src="../assets/js/auth.js"></script>
 
   <!-- Event Form Module -->
-  <script src="./event-form.js"></script>
+  <script src="./local-event-form.js"></script>
 </head>
 <body class="bg-gray-900 text-white">
   <div class="min-h-screen flex flex-col">
     <!-- Header -->
     <header class="bg-gray-800 py-4 px-6 flex items-center justify-between">
-      <h1 class="text-xl font-bold" id="page-title">Add New Event</h1>
+      <h1 class="text-xl font-bold" id="page-title">Add New Local Event</h1>
       <div class="flex items-center">
         <span class="mr-4">
           <span id="user-email" class="text-sm text-gray-300"></span>
@@ -83,24 +83,55 @@
           
           <!-- Location Field -->
           <div>
-            <label for="event-location" class="block text-sm font-medium text-gray-400 mb-1">Location</label>
-            <input type="text" id="event-location" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <label for="event-location" class="block text-sm font-medium text-gray-400 mb-1">Location <span class="text-red-500">*</span></label>
+            <input type="text" id="event-location" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+            <p id="location-error" class="mt-1 text-sm text-red-500 hidden">Please enter a location</p>
           </div>
-          
-          <!-- Group Selection -->
+
+          <!-- Community Focus -->
           <div>
-            <label for="event-group" class="block text-sm font-medium text-gray-400 mb-1">Group <span class="text-red-500">*</span></label>
-            <select id="event-group" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
-              <option value="">Select a group</option>
-              <!-- Groups will be populated dynamically -->
+            <label for="community-focus" class="block text-sm font-medium text-gray-400 mb-1">Community Focus <span class="text-red-500">*</span></label>
+            <select id="community-focus" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+              <option value="">Select community focus</option>
+              <option value="Queer">Queer</option>
+              <option value="Neurodivergent">Neurodivergent</option>
+              <option value="BIPOC">BIPOC</option>
+              <option value="All">All</option>
             </select>
-            <p id="group-error" class="mt-1 text-sm text-red-500 hidden">Please select a group</p>
+            <p id="community-focus-error" class="mt-1 text-sm text-red-500 hidden">Please select a community focus</p>
           </div>
-          
-          <!-- Featured Toggle -->
-          <div class="flex items-center">
-            <input type="checkbox" id="event-featured" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-700">
-            <label for="event-featured" class="ml-2 block text-sm text-gray-400">Featured Event</label>
+
+          <!-- Sensory-Friendly Rating -->
+          <div>
+            <label for="sensory-rating" class="block text-sm font-medium text-gray-400 mb-1">Sensory-Friendly Rating <span class="text-red-500">*</span></label>
+            <select id="sensory-rating" class="bg-gray-700 border-gray-600 text-white w-full py-2 px-3 rounded-md focus:ring-blue-500 focus:border-blue-500" required>
+              <option value="">Select sensory-friendly rating</option>
+              <option value="Very Likely">Very Likely</option>
+              <option value="Somewhat">Somewhat</option>
+              <option value="Not Particularly">Not Particularly</option>
+              <option value="Unknown">Unknown</option>
+            </select>
+            <p id="sensory-rating-error" class="mt-1 text-sm text-red-500 hidden">Please select a sensory-friendly rating</p>
+          </div>
+
+          <!-- Image Upload -->
+          <div>
+            <label for="event-image" class="block text-sm font-medium text-gray-400 mb-1">Event Image</label>
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-600 border-dashed rounded-md">
+              <div class="space-y-1 text-center">
+                <div id="image-preview" class="hidden mb-3">
+                  <img id="preview-img" src="" alt="Preview" class="mx-auto h-32 object-cover rounded-md">
+                </div>
+                <div class="flex text-sm text-gray-400">
+                  <label for="event-image-input" class="relative cursor-pointer bg-gray-700 rounded-md font-medium text-blue-500 hover:text-blue-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                    <span class="px-3 py-2">Upload a file</span>
+                    <input id="event-image-input" type="file" class="sr-only" accept="image/webp,image/png,image/jpeg,image/gif">
+                  </label>
+                  <p class="pl-1 pt-2">or drag and drop</p>
+                </div>
+                <p class="text-xs text-gray-400">WebP, PNG, JPG, GIF up to 10MB</p>
+              </div>
+            </div>
           </div>
           
           <!-- Description Field -->
@@ -134,7 +165,7 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      initializeEventForm();
+      initializeLocalEventForm();
     });
   </script>
 </body>
