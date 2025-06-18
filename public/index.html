@@ -7,12 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="github-pages-supabase-fix.js"></script>
-    <script src="supabase-config.js"></script>
-    <script src="group-events.js"></script>
+    <script src="../src/js/config/github-pages-supabase-fix.js"></script>
+    <script src="../src/js/config/supabase-config.js"></script>
+    <script src="../src/js/events/group-events.js"></script>
     <script type="module">
-      import { RainbowPulsatingButton } from './components/RainbowPulsatingButton.js';
-      import { GroupCarousel } from './components/GroupCarousel.js';
+      import { RainbowPulsatingButton } from '../src/components/RainbowPulsatingButton.js';
+      import { GroupCarousel } from '../src/components/GroupCarousel.js';
       
       customElements.define('rainbow-pulsating-button', RainbowPulsatingButton);
       new GroupCarousel();
@@ -32,8 +32,8 @@
  <body class="bg-black text-white font-dyslexie">
     <header class="w-full relative">
       <div class="max-w-4xl mx-auto relative">
-        <img src="images/SIN-Couple.webp" alt="SIN Couple" class="w-full h-auto"/>
-        <img src="images/sinlogo.webp" alt="SIN Logo" class="absolute top-0 -left-4 sm:-left-12 md:-left-16 w-[50%] h-auto z-10"/>
+        <img src="../assets/images/banners/sinlogo.webp" alt="SIN Couple" class="w-full h-auto"/>
+        <img src="../assets/images/banners/sinlogo.webp" alt="SIN Logo" class="absolute top-0 -left-4 sm:-left-12 md:-left-16 w-[50%] h-auto z-10"/>
       </div>
     </header>
     <main>
@@ -507,12 +507,12 @@
 
      /* Custom cursor styles */
      body {
-       cursor: url('./cursors/default-cursor.png') 16 16, auto;
+       cursor: url('../assets/cursors/default-cursor.png') 16 16, auto;
      }
      
      a:hover,
      button:hover {
-       cursor: url('./cursors/hover-cursor.png') 20 20, pointer;
+       cursor: url('../assets/cursors/hover-cursor.png') 20 20, pointer;
      }
 
       /* Accordion styles */
@@ -619,17 +619,12 @@
       });
     </script>
     <script type="module">
-      import ScrollProgress from './components/ScrollProgress.js';
-      import { GroupCarousel } from './components/GroupCarousel.js';
+      import ScrollProgress from '../src/components/ScrollProgress.js';
 
       // Wait for both DOM content and all resources to load
       window.addEventListener('load', () => {
         // Initialize ScrollProgress
         const scrollProgress = new ScrollProgress();
-
-        // Initialize GroupCarousel
-        const carousel = new GroupCarousel();
-        carousel.initialize();
 
         // Cleanup on page unload
         window.addEventListener('unload', () => {

@@ -22,31 +22,31 @@ export class GroupCarousel {
       { 
         name: "Cafeteria Collective", 
         role: "Community Group",
-        image: "images/Cafeteria card.webp",
+        image: "../assets/images/cards/Cafeteria card.webp",
         link: "groups/cafeteria-collective.html"
       },
       { 
         name: "Disabitch", 
         role: "Community Group",
-        image: "images/Disabitch card.webp",
+        image: "../assets/images/cards/Disabitch card.webp",
         link: "groups/disabitch.html"
       },
       { 
         name: "Hue House", 
         role: "Community Group",
-        image: "images/Hue House card.webp",
+        image: "../assets/images/cards/Hue House card.webp",
         link: "groups/Hue-House.html"
       },
       { 
         name: "Rock & Stone", 
         role: "Community Group",
-        image: "images/Rock Stone card.webp",
+        image: "../assets/images/cards/Rock Stone card.webp",
         link: "groups/rock-and-stone.html"
       },
       { 
         name: "Sunstone Youth Group", 
         role: "Community Group",
-        image: "images/SYG card.webp",
+        image: "../assets/images/cards/SYG card.webp",
         link: "groups/sunstone-youth-group.html"
       }
     ];
@@ -255,7 +255,7 @@ initialize() {
   async fetchEvents() {
     console.log('Fetching events...');
     try {
-      const response = await fetch('events.json');
+      const response = await fetch('../data/events.json');
       const data = await response.json();
       console.log('Events data:', data);
       

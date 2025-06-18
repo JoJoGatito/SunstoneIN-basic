@@ -43,8 +43,8 @@
                 <div class="text-xl">10</div>
               </div>
               <div class="relative pt-[129.4%] bg-gray-800">
-                <a href="images/events/Adult-Storytime.webp" class="event-flyer">
-                  <img src="images/events/Adult-Storytime.webp" alt="Adult Storytime at the library on June 10, 2025" class="absolute inset-0 w-full h-full object-contain">
+                <a href="../assets/images/events/Adult-Storytime.webp" class="event-flyer">
+                  <img src="../assets/images/events/Adult-Storytime.webp" alt="Adult Storytime at the library on June 10, 2025" class="absolute inset-0 w-full h-full object-contain">
                 </a>
               </div>
             </div>
@@ -94,17 +94,11 @@
       </div>
     </footer>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        new SimpleLightbox('.event-flyer', {
-          captionPosition: 'bottom',
-          widthRatio: 0.9,
-          heightRatio: 0.9,
-          disableScroll: true,
-          closeText: '×',
-          showCounter: false
-        });
-      });
-    </script>
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Application Scripts -->
+    <script src="../src/js/config/supabase-config.js"></script>
+    <script src="../src/js/events/local-events.js"></script>
   </body>
 </html>
