@@ -7,11 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/src/js/config/github-pages-supabase-fix.js"></script>
-    <script src="/src/js/config/supabase-config.js"></script>
-    <script src="/src/js/events/group-events.js"></script>
+    <script src="src/js/config/github-pages-supabase-fix.js"></script>
+    <script src="src/js/config/supabase-config.js"></script>
+    <script src="src/js/events/group-events.js"></script>
     <script type="module">
-      import { GroupCarousel } from '/src/components/GroupCarousel.js';
+      import { GroupCarousel } from 'src/components/GroupCarousel.js';
       
       new GroupCarousel();
     </script>
@@ -30,8 +30,8 @@
  <body class="bg-black text-white font-dyslexie">
     <header class="w-full relative">
       <div class="max-w-4xl mx-auto relative">
-        <img src="/assets/images/banners/SIN Banner 1.webp" alt="SIN Logo" class="absolute -top-16 -left-16 sm:-left-24 md:-left-32 w-[50%] h-auto z-10"/>
-        <img src="/assets/images/banners/sinlogo.webp" alt="SIN Couple" class="w-full h-auto"/>
+        <img src="assets/images/banners/SIN Banner 1.webp" alt="SIN Logo" class="absolute -top-16 -left-16 sm:-left-24 md:-left-32 w-[50%] h-auto z-10"/>
+        <img src="assets/images/banners/sinlogo.webp" alt="SIN Couple" class="w-full h-auto"/>
       </div>
     </header>
     <main>
@@ -64,7 +64,7 @@
                   <div class="arrow" aria-hidden="true"></div>
                 </label>
                 <div id="events-content" class="dropdown-content" role="menu">
-                  <a href="/public/local-events.html" class="dropdown-link" role="menuitem">View All Events</a>
+                  <a href="public/local-events.html" class="dropdown-link" role="menuitem">View All Events</a>
                 </div>
     
                 <!-- Local Resources -->
@@ -75,7 +75,7 @@
                   <div class="arrow" aria-hidden="true"></div>
                 </label>
                 <div id="resources-content" class="dropdown-content" role="menu">
-                  <a href="/public/resources.html" class="dropdown-link" role="menuitem">View Resources</a>
+                  <a href="public/resources.html" class="dropdown-link" role="menuitem">View Resources</a>
                 </div>
     
                 <!-- Groups -->
@@ -86,11 +86,11 @@
                   <div class="arrow" aria-hidden="true"></div>
                 </label>
                 <div id="groups-content" class="dropdown-content" role="menu">
-                  <a href="/groups/cafeteria-collective.html" class="dropdown-link" role="menuitem">Cafeteria Collective</a>
-                  <a href="/groups/disabitch.html" class="dropdown-link" role="menuitem">Disabitch</a>
-                  <a href="/groups/Hue-House.html" class="dropdown-link" role="menuitem">Hue House</a>
-                  <a href="/groups/rock-and-stone.html" class="dropdown-link" role="menuitem">Rock & Stone</a>
-                  <a href="/groups/sunstone-youth-group.html" class="dropdown-link" role="menuitem">Sunstone Youth Group</a>
+                  <a href="groups/cafeteria-collective.html" class="dropdown-link" role="menuitem">Cafeteria Collective</a>
+                  <a href="groups/disabitch.html" class="dropdown-link" role="menuitem">Disabitch</a>
+                  <a href="groups/Hue-House.html" class="dropdown-link" role="menuitem">Hue House</a>
+                  <a href="groups/rock-and-stone.html" class="dropdown-link" role="menuitem">Rock & Stone</a>
+                  <a href="groups/sunstone-youth-group.html" class="dropdown-link" role="menuitem">Sunstone Youth Group</a>
                 </div>
     
                 <!-- Discord -->
@@ -617,7 +617,7 @@
       });
     </script>
     <script type="module">
-      import ScrollProgress from '../src/components/ScrollProgress.js';
+      import ScrollProgress from './src/components/ScrollProgress.js';
 
       // Wait for both DOM content and all resources to load
       window.addEventListener('load', () => {
