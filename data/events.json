@@ -9,7 +9,8 @@
     "event_template": {
       "title": "Event Title Here",
       "date": "Month DD, YYYY",
-      "time": "H:MM AM/PM - H:MM AM/PM",
+      "start_time": "H:MM AM/PM",
+      "end_time": "H:MM AM/PM",
       "location": "Full address or venue name",
       "description": "Full description of the event"
     }
@@ -24,7 +25,8 @@
           "_comment": "Next Event",
           "title": "Queer Talk",
           "date": "June 17, 2025",
-          "time": "4:00 PM - 8:00 PM",
+          "start_time": "4:00 PM",
+          "end_time": "8:00 PM",
           "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
           "description": "Pick an pride or lgbtq related topic, make a google slide presentation about the topic and you can present it to the group. This will be called Queer Talk."
         },
@@ -32,7 +34,8 @@
           "_comment": "Event 2",
           "title": "Movie Night",
           "date": "June 24, 2025",
-          "time": "4:00 PM - 8:00 PM",
+          "start_time": "4:00 PM",
+          "end_time": "8:00 PM",
           "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
           "description": "Join us every 4th Tuesday of the month for a cozy night in with popcorn, good vibes, and a community-picked movie! Vote for your favorite film in the Discord channel—whichever gets the most love is what we’ll watch. We’ll provide the movie and the snacks—just bring yourself and get comfy!"
         },
@@ -40,7 +43,8 @@
           "_comment": "Event 3",
           "title": "Workshop: Pride Crafts",
           "date": "July 01, 2025",
-          "time": "4:00 PM - 8:00 PM",
+          "start_time": "4:00 PM",
+          "end_time": "8:00 PM",
           "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
           "description": "We will be making rainbow pancakes and crafting. Bring your craft supplies and we will bring the pancakes."
         },
@@ -48,7 +52,8 @@
           "_comment": "Event 4",
           "title": "DND & Game Night",
           "date": "July 08, 2025",
-          "time": "4:00 PM - 8:00 PM",
+          "start_time": "4:00 PM",
+          "end_time": "8:00 PM",
           "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
           "description": "DnD (if available) or Board/Video Games."
         },
@@ -56,7 +61,8 @@
           "_comment": "Event 5",
           "title": "Queer Talk",
           "date": "July 15, 2025",
-          "time": "4:00 PM - 8:00 PM",
+          "start_time": "4:00 PM",
+          "end_time": "8:00 PM",
           "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
           "description": "Pick an pride or lgbtq related topic, make a google slide presentation about the topic and you can present it to the group. This will be called Queer Talk."
         },
@@ -64,7 +70,8 @@
           "_comment": "Event 6",
           "title": "Movie Night",
           "date": "July 22, 2025",
-          "time": "4:00 PM - 8:00 PM",
+          "start_time": "4:00 PM",
+          "end_time": "8:00 PM",
           "location": "2111 S Pueblo Blvd, Pueblo, CO 81005",
           "description": "Join us every 4th Tuesday of the month for a cozy night in with popcorn, good vibes, and a community-picked movie! Vote for your favorite film in the Discord channel—whichever gets the most love is what we’ll watch. We’ll provide the movie and the snacks—just bring yourself and get comfy!"
         }
@@ -79,7 +86,8 @@
           "_comment": "TBD",
           "title": "TBD",
           "date": "",
-          "time": "",
+          "start_time": "",
+          "end_time": "",
           "location": "",
           "description": ""
         }
@@ -94,7 +102,8 @@
           "_comment": "This is the most recent upcoming Disabitch event (shown on home page)",
           "title": "Queer Social",
           "date": "June 14, 2025",
-          "time": "6:00 PM - 11:00 PM",
+          "start_time": "6:00 PM",
+          "end_time": "11:00 PM",
           "location": "The Ethos",
           "description": "Join us for a social gathering and some karaoke"
         }
@@ -109,7 +118,8 @@
           "_comment": "first event",
           "title": "Pride Hike",
           "date": "June 29, 2025",
-          "time": "1:00 PM - 5:00 PM",
+          "start_time": "1:00 PM",
+          "end_time": "5:00 PM",
           "location": "9112 Pueblo Mountain Park Rd, Beulah, CO 81023",
           "description": "Come in your hiking gear but rainbow pride! Wear your flags, strut your pride on our hike! Bring water, snack, rainjacket, ect<br><br>Carpool Group: Meet at the Rawling library @12:30pm<br><br>Other drivers meet us at the Pueblo Mountain Park!"
         }
@@ -124,7 +134,8 @@
           "_comment": "Add your first POC Group event here when ready",
           "title": "TBD",
           "date": "",
-          "time": "",
+          "start_time": "",
+          "end_time": "",
           "location": "",
           "description": ""
         }

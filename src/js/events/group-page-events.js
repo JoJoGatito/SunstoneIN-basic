@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // Function to display events
-  function displayEvents(events) {
+  function displayEvents(events, queryEndTime) {
     // Clear existing events
     const existingEvents = eventsSection.querySelector('.bg-gray-900');
     if (existingEvents) {
@@ -60,9 +60,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         <div class="flex items-center mb-3">
           <i class="far fa-calendar text-yellow-500 mr-2"></i>
           <span>${new Date(event.date).toLocaleDateString()}</span>
-          ${event.time ? `
+          ${event.start_time ? `
             <i class="far fa-clock text-yellow-500 ml-4 mr-2"></i>
-            <span>${event.time}</span>
+            <span>${event.start_time}${event.end_time ? ` - ${event.end_time}` : ''}</span>
           ` : ''}
         </div>
         
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       return;
     }
 
-    displayEvents(events);
+    displayEvents(events, queryEndTime);
 
     // Subscribe to real-time updates
     const subscription = supabase
@@ -172,7 +172,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
           }
 
-          displayEvents(updatedEvents);
+          const refreshQueryEndTime = performance.now();
+          displayEvents(updatedEvents, refreshQueryEndTime);
         }
       )
       .subscribe();

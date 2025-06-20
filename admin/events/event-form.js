@@ -148,7 +148,7 @@ async function handleFormSubmit(e) {
     const eventData = {
       title: document.getElementById('event-title').value.trim(),
       date: formattedDate,
-      time: document.getElementById('event-time').value || null,
+      start_time: document.getElementById('event-time').value || null,
       end_time: document.getElementById('event-end-time').value || null,
       location: document.getElementById('event-location').value.trim() || null,
       description: document.getElementById('event-description').value.trim() || null,

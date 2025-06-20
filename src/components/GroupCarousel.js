@@ -22,32 +22,32 @@ export class GroupCarousel {
       { 
         name: "Cafeteria Collective", 
         role: "Community Group",
-        image: "../assets/images/cards/Cafeteria card.webp",
-        link: "groups/cafeteria-collective.html"
+        image: "/assets/images/cards/Cafeteria card.webp",
+        link: "/groups/cafeteria-collective.html"
       },
       { 
         name: "Disabitch", 
         role: "Community Group",
-        image: "../assets/images/cards/Disabitch card.webp",
-        link: "groups/disabitch.html"
+        image: "/assets/images/cards/Disabitch card.webp",
+        link: "/groups/disabitch.html"
       },
       { 
         name: "Hue House", 
         role: "Community Group",
-        image: "../assets/images/cards/Hue House card.webp",
-        link: "groups/Hue-House.html"
+        image: "/assets/images/cards/Hue House card.webp",
+        link: "/groups/Hue-House.html"
       },
       { 
         name: "Rock & Stone", 
         role: "Community Group",
-        image: "../assets/images/cards/Rock Stone card.webp",
-        link: "groups/rock-and-stone.html"
+        image: "/assets/images/cards/Rock Stone card.webp",
+        link: "/groups/rock-and-stone.html"
       },
       { 
         name: "Sunstone Youth Group", 
         role: "Community Group",
-        image: "../assets/images/cards/SYG card.webp",
-        link: "groups/sunstone-youth-group.html"
+        image: "/assets/images/cards/SYG card.webp",
+        link: "/groups/sunstone-youth-group.html"
       }
     ];
 
@@ -253,24 +253,41 @@ initialize() {
   }
 
   async fetchEvents() {
-    console.log('Fetching events...');
+    console.log('Fetching events from Supabase...');
     try {
-      const response = await fetch('../data/events.json');
-      const data = await response.json();
-      console.log('Events data:', data);
+      // First get all groups with their IDs
+      const { data: groups, error: groupsError } = await supabase
+        .from('groups')
+        .select('id, name')
+        .order('id');
+
+      if (groupsError) throw groupsError;
+      if (!groups) throw new Error('No groups found');
+
+      // Then get upcoming events
+      const { data: events, error: eventsError } = await supabase
+        .from('events')
+        .select('*')
+        .gte('date', new Date().toISOString().split('T')[0])
+        .order('date', { ascending: true });
+
+      if (eventsError) throw eventsError;
       
-      // Create a map of group ID to their next event
-      data.groups.forEach(group => {
-        if (group.events && group.events.length > 0 && group.events[0].title) {
-          const groupId = group.id;
-          console.log(`Adding event for ${groupId}:`, group.events[0]);
-          this.events[groupId] = group.events[0];
+      // Map events to their groups
+      groups.forEach(group => {
+        const groupEvents = events.filter(event => event.group_id === group.id);
+        if (groupEvents.length > 0) {
+          const nextEvent = groupEvents[0]; // First event is the next upcoming one
+          console.log(`Adding event for ${group.id}:`, nextEvent);
+          this.events[group.id] = nextEvent;
         }
       });
       
       console.log('Processed events:', this.events);
     } catch (error) {
-      console.error('Error fetching events:', error);
+      console.error('Error fetching events from Supabase:', error);
+      // Let the error propagate to be handled by the caller
+      throw error;
     }
   }
 

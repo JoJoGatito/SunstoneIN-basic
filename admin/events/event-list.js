@@ -9,7 +9,8 @@
  * @property {number} id - Event ID
  * @property {string} title - Event title
  * @property {string} date - Event date in ISO format
- * @property {string} [time] - Optional event time
+ *  @property {string} [start_time] - Optional event start time
+ *  @property {string} [end_time] - Optional event end time
  * @property {string} [location] - Optional event location
  * @property {string} [description] - Optional event description
  * @property {number} group_id - Group ID this event belongs to
