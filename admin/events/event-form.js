@@ -133,21 +133,16 @@ async function handleFormSubmit(e) {
   toggleSaveButton(true);
   
   try {
-    // Get raw date value
+    // Get date value - already in YYYY-MM-DD format from input[type="date"]
     const dateInput = document.getElementById('event-date').value;
-    console.log("Raw date input:", dateInput);
     
-    // Parse the date with timezone awareness
-    const parsedDate = new Date(dateInput + 'T12:00:00');
-    console.log("Parsed date object:", parsedDate);
-    
-    // Format for Supabase (YYYY-MM-DD)
-    const formattedDate = parsedDate.toISOString().split('T')[0];
-    console.log("Formatted date for Supabase:", formattedDate);
+    // Use the date directly since database column is now proper DATE type
+    const formattedDate = dateInput;
     
     const eventData = {
       title: document.getElementById('event-title').value.trim(),
       date: formattedDate,
+      // Time inputs already return proper 24hr format (HH:mm)
       start_time: document.getElementById('event-time').value || null,
       end_time: document.getElementById('event-end-time').value || null,
       location: document.getElementById('event-location').value.trim() || null,
@@ -241,8 +236,10 @@ async function loadEvent(eventId) {
     
     // Populate form fields
     document.getElementById('event-title').value = event.title || '';
+    // Date comes from DB as YYYY-MM-DD, which is exactly what input[type="date"] expects
     document.getElementById('event-date').value = event.date || '';
-    document.getElementById('event-time').value = event.time || '';
+    // Times come from DB as HH:mm, which is exactly what input[type="time"] expects
+    document.getElementById('event-time').value = event.start_time || '';
     document.getElementById('event-end-time').value = event.end_time || '';
     document.getElementById('event-location').value = event.location || '';
     document.getElementById('event-group').value = event.group_id || '';

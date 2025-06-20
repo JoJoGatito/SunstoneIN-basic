@@ -217,9 +217,19 @@ async function fallbackToJson() {
       const groupCard = document.querySelector(`a[href="groups/${group.id}.html"]`);
       if (!groupCard) return;
 
+      // Start of current day for consistent comparison
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       const upcomingEvents = group.events.filter(event => {
-        return new Date(event.date) >= new Date();
-      }).sort((a, b) => new Date(a.date) - new Date(b.date));
+        const eventDate = new Date(event.date);
+        eventDate.setHours(0, 0, 0, 0);
+        return eventDate >= today;
+      }).sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA - dateB;
+      });
 
       const nextEvent = upcomingEvents[0];
       if (nextEvent) {

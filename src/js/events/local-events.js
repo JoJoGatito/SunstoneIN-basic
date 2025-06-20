@@ -73,9 +73,16 @@ function createEventCard(event) {
   const card = document.createElement('article');
   card.className = 'bg-gray-900 rounded-lg overflow-hidden';
   
-  const dateLabel = `Event date: ${new Date(event.date).toLocaleDateString()}`;
-  if (event.time) {
-    dateLabel += ` at ${event.time}`;
+  // Format date using Intl.DateTimeFormat
+  const dateFormatter = new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+  const dateLabel = `Event date: ${dateFormatter.format(new Date(event.date))}`;
+  if (event.start_time) {
+    dateLabel += ` at ${event.start_time}`;
   }
   
   card.innerHTML = `
@@ -101,7 +108,7 @@ function createEventCard(event) {
       ${event.description ? `<p class="text-gray-300 mb-4">${event.description}</p>` : ''}
       <div class="flex items-center text-gray-400">
         <i class="fas fa-clock mr-2"></i>
-        <span>${event.time || 'Time TBA'}${event.end_time ? ` - ${event.end_time}` : ''}</span>
+        <span>${event.start_time || 'Time TBA'}${event.end_time ? ` - ${event.end_time}` : ''}</span>
       </div>
       <div class="flex items-center text-gray-400 mt-2">
         <i class="fas fa-map-marker-alt mr-2"></i>

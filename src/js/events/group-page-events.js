@@ -45,6 +45,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Sort events by date
     events.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+    // Create date formatter once for consistent formatting
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+
     // Display each upcoming event
     events.forEach((event, index) => {
       if (!event.title || !event.date) return;
@@ -59,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         <div class="flex items-center mb-3">
           <i class="far fa-calendar text-yellow-500 mr-2"></i>
-          <span>${new Date(event.date).toLocaleDateString()}</span>
+          <span>${dateFormatter.format(new Date(event.date))}</span>
           ${event.start_time ? `
             <i class="far fa-clock text-yellow-500 ml-4 mr-2"></i>
             <span>${event.start_time}${event.end_time ? ` - ${event.end_time}` : ''}</span>

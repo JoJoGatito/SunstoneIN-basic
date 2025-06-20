@@ -652,32 +652,19 @@ function renderEventsTable() {
   
   // Add events to the table
   eventsToShow.forEach(event => {
-    // Log the date value to help debug the issue
-    console.log(`Event ID ${event.id} date value:`, event.date);
-    
-    // Improved date parsing with validation
-    let formattedDate = 'Invalid date';
-    try {
-      if (event.date) {
-        // Try to parse the date more safely
-        const dateObj = new Date(event.date);
-        
-        // Check if date is valid before formatting
-        if (!isNaN(dateObj.getTime())) {
-          formattedDate = dateObj.toLocaleDateString();
-        } else {
-          console.error(`Invalid date format for event ${event.id}:`, event.date);
-        }
-      } else {
-        console.error(`Missing date for event ${event.id}`);
-      }
-    } catch (error) {
-      console.error(`Error parsing date for event ${event.id}:`, error);
-    }
-    
     const row = document.createElement('tr');
     row.className = 'hover:bg-gray-700';
     row.setAttribute('data-event-id', event.id);
+    
+    // Format date using browser's date formatting
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+    
+    const formattedDate = dateFormatter.format(new Date(event.date));
     
     row.innerHTML = `
       <td class="px-6 py-4 whitespace-nowrap">
@@ -686,8 +673,8 @@ function renderEventsTable() {
       <td class="px-6 py-4 whitespace-nowrap">
         <div class="text-sm text-gray-300">${formattedDate}</div>
         <div class="text-sm text-gray-400">
-          ${event.time ? event.time : 'No time specified'}
-          ${event.time && event.end_time ? ' - ' + event.end_time : ''}
+          ${event.start_time ? event.start_time : 'No time specified'}
+          ${event.start_time && event.end_time ? ' - ' + event.end_time : ''}
         </div>
       </td>
       <td class="px-6 py-4 whitespace-nowrap">
