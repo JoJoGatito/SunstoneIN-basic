@@ -17,85 +17,175 @@ export class GroupCarousel {
     // Event data
     this.events = {};
 
-    // Group data
+    // Detect environment
+    this.isGitHubPages = window.location.hostname.includes('github.io');
+    
+    // Group data with proper path resolution
+    this.baseUrl = this.isGitHubPages ? '/Dev-Web' : '';
+    console.log('[GroupCarousel] Environment:', {
+      isGitHubPages: this.isGitHubPages,
+      baseUrl: this.baseUrl,
+      hostname: window.location.hostname,
+      pathname: window.location.pathname
+    });
+    
     this.groupData = [
       { 
         name: "Cafeteria Collective", 
         role: "Community Group",
-        image: "/assets/images/cards/Cafeteria card.webp",
-        link: "/groups/cafeteria-collective.html"
+        image: `${this.baseUrl}/assets/images/cards/Cafeteria card.webp`,
+        link: `${this.baseUrl}/groups/cafeteria-collective.html`
       },
       { 
         name: "Disabitch", 
         role: "Community Group",
-        image: "/assets/images/cards/Disabitch card.webp",
-        link: "/groups/disabitch.html"
+        image: `${this.baseUrl}/assets/images/cards/Disabitch card.webp`,
+        link: `${this.baseUrl}/groups/disabitch.html`
       },
       { 
         name: "Hue House", 
         role: "Community Group",
-        image: "/assets/images/cards/Hue House card.webp",
-        link: "/groups/Hue-House.html"
+        image: `${this.baseUrl}/assets/images/cards/Hue House card.webp`,
+        link: `${this.baseUrl}/groups/Hue-House.html`
       },
       { 
         name: "Rock & Stone", 
         role: "Community Group",
-        image: "/assets/images/cards/Rock Stone card.webp",
-        link: "/groups/rock-and-stone.html"
+        image: `${this.baseUrl}/assets/images/cards/Rock Stone card.webp`,
+        link: `${this.baseUrl}/groups/rock-and-stone.html`
       },
       { 
         name: "Sunstone Youth Group", 
         role: "Community Group",
-        image: "/assets/images/cards/SYG card.webp",
-        link: "/groups/sunstone-youth-group.html"
+        image: `${this.baseUrl}/assets/images/cards/SYG card.webp`,
+        link: `${this.baseUrl}/groups/sunstone-youth-group.html`
       }
     ];
 
-    // Initialize after DOM content is loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      // First fetch events, then initialize carousel
-      this.fetchEvents().then(() => {
-        console.log('Events loaded, initializing carousel');
-        this.initialize();
+    // Add stylesheet to document instead of inline injection
+    this.addCarouselStylesheet();
+    
+    // First try immediate initialization
+    console.log('[GroupCarousel] Attempting immediate initialization');
+    this.initializeWithEvents().catch(error => {
+      console.warn('[GroupCarousel] Immediate initialization failed, will try on DOMContentLoaded', error);
+      
+      // Fallback to DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('[GroupCarousel] DOMContentLoaded triggered');
+        this.initializeWithEvents().catch(error => {
+          console.error('[GroupCarousel] Failed to initialize with events, trying without events', error);
+          // Final fallback - just render without events
+          this.initialize();
+        });
       });
     });
-  }
-initialize() {
-  // Inject styles first
-  this.injectStyles();
-
-  // Get the container
-  const container = document.querySelector('#carousel-container');
-  if (!container) {
-    console.error('Could not find #our-groups-section');
-    return;
-  }
-
-    // Insert carousel HTML
-    container.innerHTML = this.createCarouselHTML();
     
-    // Force a reflow to ensure styles are applied
-    container.offsetHeight;
-
-    // Initialize DOM elements
-    this.cards = document.querySelectorAll(".card");
-    this.dots = document.querySelectorAll(".dot");
-    this.memberName = document.querySelector(".member-name");
-    this.memberRole = document.querySelector(".member-role");
-    this.leftArrow = document.querySelector(".nav-arrow.left");
-    this.rightArrow = document.querySelector(".nav-arrow.right");
-
-    if (!this.cards.length || !this.dots.length || !this.memberName || !this.memberRole || !this.leftArrow || !this.rightArrow) {
-      console.error('Could not initialize all required DOM elements');
+    // Ultimate fallback - try initialization after a delay
+    setTimeout(() => {
+      if (!this.cards) {
+        console.log('[GroupCarousel] Delayed initialization attempt');
+        this.initialize();
+      }
+    }, 2000);
+  }
+  
+  /**
+   * Adds the carousel stylesheet to the document head
+   */
+  addCarouselStylesheet() {
+    const styleId = 'group-carousel-styles';
+    if (document.getElementById(styleId)) {
+      console.log('[GroupCarousel] Styles already exist');
       return;
     }
+    
+    console.log('[GroupCarousel] Adding carousel stylesheet');
+    const styleSheet = document.createElement('style');
+    styleSheet.id = styleId;
+    styleSheet.textContent = this.getCarouselStyles();
+    document.head.appendChild(styleSheet);
+    console.log('[GroupCarousel] Stylesheet added to document head');
+  }
+  
+  /**
+   * Initialize carousel with Supabase events data
+   */
+  async initializeWithEvents() {
+    console.log('[GroupCarousel] Initializing with events');
+    try {
+      if (typeof window.supabase === 'undefined') {
+        console.warn('[GroupCarousel] Supabase not initialized');
+        throw new Error('Supabase not available');
+      }
+      
+      await this.fetchEvents();
+      this.initialize();
+      return true;
+    } catch (error) {
+      console.error('[GroupCarousel] Error initializing with events:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Main initialization method
+   */
+  initialize() {
+    console.log('[GroupCarousel] Initialize method called');
+    
+    try {
+      // Get the container
+      console.log('[GroupCarousel] Looking for carousel container');
+      const container = document.querySelector('#carousel-container');
+      if (!container) {
+        console.error('[GroupCarousel] Could not find #carousel-container element');
+        // Log available IDs for debugging
+        const allElements = document.querySelectorAll('[id]');
+        console.log('[GroupCarousel] Available elements with IDs:', 
+          Array.from(allElements).map(el => ({id: el.id, tagName: el.tagName}))
+        );
+        return;
+      }
+      console.log('[GroupCarousel] Found carousel container');
 
-    // Add event listeners
-    this.setupEventListeners();
+      // Insert carousel HTML
+      console.log('[GroupCarousel] Creating carousel HTML');
+      const carouselHTML = this.createCarouselHTML();
+      container.innerHTML = carouselHTML;
+      console.log('[GroupCarousel] Carousel HTML inserted');
+      
+      // Initialize DOM elements
+      this.cards = document.querySelectorAll(".card");
+      this.dots = document.querySelectorAll(".dot");
+      this.memberName = document.querySelector(".member-name");
+      this.memberRole = document.querySelector(".member-role");
+      this.leftArrow = document.querySelector(".nav-arrow.left");
+      this.rightArrow = document.querySelector(".nav-arrow.right");
+      
+      console.log('[GroupCarousel] DOM elements:', {
+        cards: this.cards.length,
+        dots: this.dots.length,
+        memberName: this.memberName ? 'found' : 'missing',
+        memberRole: this.memberRole ? 'found' : 'missing',
+        leftArrow: this.leftArrow ? 'found' : 'missing',
+        rightArrow: this.rightArrow ? 'found' : 'missing'
+      });
 
-    // Initialize carousel state
-    this.updateCarousel(0);
+      if (!this.cards.length || !this.dots.length || !this.memberName || !this.memberRole || !this.leftArrow || !this.rightArrow) {
+        console.error('[GroupCarousel] Could not initialize all required DOM elements');
+        return;
+      }
 
+      // Add event listeners
+      this.setupEventListeners();
+
+      // Initialize carousel state
+      this.updateCarousel(0);
+      console.log('[GroupCarousel] Initialization complete');
+    } catch (error) {
+      console.error('[GroupCarousel] Critical initialization error:', error);
+    }
   }
 
   createCarouselHTML() {
@@ -106,7 +196,7 @@ initialize() {
           ${this.groupData.map((group, i) => {
             const groupId = group.link.split('/').pop().replace('.html', '');
             const nextEvent = this.events[groupId];
-            console.log(`Group ${group.name} (${groupId}) event:`, nextEvent);
+            
             return `
               <div class="card" data-index="${i}" role="button" aria-label="${group.name}">
                 <a href="${group.link}">
@@ -153,7 +243,6 @@ initialize() {
 
     this.cards.forEach((card, i) => {
       const offset = (i - this.currentIndex + this.cards.length) % this.cards.length;
-      console.log(`Card ${i} (${this.groupData[i].name}) - offset: ${offset}`);
 
       card.classList.remove(
         "center",
@@ -175,7 +264,6 @@ initialize() {
       } else if (offset === this.cards.length - 2) {
         card.classList.add("left-2");
       } else {
-        console.log(`Adding hidden class to card ${i} (${this.groupData[i].name}) with offset ${offset}`);
         card.classList.add("hidden");
       }
     });
@@ -253,46 +341,71 @@ initialize() {
   }
 
   async fetchEvents() {
-    console.log('Fetching events from Supabase...');
+    console.log('[GroupCarousel] Fetching events from Supabase');
     try {
-      // First get all groups with their IDs
-      const { data: groups, error: groupsError } = await supabase
+      // Try minimal database connection to test it works
+      const { data: testData, error: testError } = await window.supabase
+        .from('groups')
+        .select('id')
+        .limit(1);
+        
+      if (testError) {
+        console.error('[GroupCarousel] Supabase connection test failed:', testError);
+        throw testError;
+      }
+      
+      console.log('[GroupCarousel] Supabase connection test successful');
+      
+      // Proceed with actual queries
+      const { data: groups, error: groupsError } = await window.supabase
         .from('groups')
         .select('id, name')
         .order('id');
 
-      if (groupsError) throw groupsError;
-      if (!groups) throw new Error('No groups found');
-
-      // Then get upcoming events
-      const { data: events, error: eventsError } = await supabase
+      if (groupsError) {
+        console.error('[GroupCarousel] Error fetching groups:', groupsError);
+        throw groupsError;
+      }
+      
+      if (!groups || groups.length === 0) {
+        console.warn('[GroupCarousel] No groups found in database');
+        return;
+      }
+      
+      const { data: events, error: eventsError } = await window.supabase
         .from('events')
         .select('*')
         .gte('date', new Date().toISOString().split('T')[0])
         .order('date', { ascending: true });
 
-      if (eventsError) throw eventsError;
+      if (eventsError) {
+        console.error('[GroupCarousel] Error fetching events:', eventsError);
+        throw eventsError;
+      }
+      
+      if (!events || events.length === 0) {
+        console.warn('[GroupCarousel] No upcoming events found');
+        return;
+      }
       
       // Map events to their groups
       groups.forEach(group => {
         const groupEvents = events.filter(event => event.group_id === group.id);
         if (groupEvents.length > 0) {
           const nextEvent = groupEvents[0]; // First event is the next upcoming one
-          console.log(`Adding event for ${group.id}:`, nextEvent);
           this.events[group.id] = nextEvent;
         }
       });
       
-      console.log('Processed events:', this.events);
+      console.log('[GroupCarousel] Events loaded for groups:', Object.keys(this.events).length);
     } catch (error) {
-      console.error('Error fetching events from Supabase:', error);
-      // Let the error propagate to be handled by the caller
+      console.error('[GroupCarousel] Error fetching events:', error);
       throw error;
     }
   }
 
-  injectStyles() {
-    const styles = `
+  getCarouselStyles() {
+    return `
       .event-bubble {
         position: absolute;
         bottom: 40px;
@@ -400,214 +513,124 @@ initialize() {
         filter: none;
       }
 
-      .card.left-2 {
-        z-index: 1;
-        transform: translateX(-120px) scale(0.8) translateZ(-300px);
-        opacity: 0.7;
-      }
-
-      .card.left-2 img {
-        filter: grayscale(100%);
-      }
-
       .card.left-1 {
         z-index: 5;
-        transform: translateX(-70px) scale(0.9) translateZ(-100px);
-        opacity: 0.9;
+        transform: translateX(-70%) translateZ(-100px);
       }
 
       .card.left-1 img {
-        filter: grayscale(100%);
+        filter: brightness(0.7);
+      }
+
+      .card.left-2 {
+        z-index: 1;
+        transform: translateX(-100%) translateZ(-200px);
+      }
+
+      .card.left-2 img {
+        filter: brightness(0.5);
       }
 
       .card.right-1 {
         z-index: 5;
-        transform: translateX(70px) scale(0.9) translateZ(-100px);
-        opacity: 0.9;
+        transform: translateX(70%) translateZ(-100px);
       }
 
       .card.right-1 img {
-        filter: grayscale(100%);
+        filter: brightness(0.7);
       }
 
       .card.right-2 {
         z-index: 1;
-        transform: translateX(120px) scale(0.8) translateZ(-300px);
-        opacity: 0.7;
+        transform: translateX(100%) translateZ(-200px);
       }
 
       .card.right-2 img {
-        filter: grayscale(100%);
+        filter: brightness(0.5);
       }
 
       .card.hidden {
         opacity: 0;
+        transform: translateX(0) translateZ(-300px);
         pointer-events: none;
-      }
-
-      .member-info {
-        text-align: center;
-        margin-top: 40px;
-        transition: all 0.5s ease-out;
-      }
-
-      .member-name {
-        color: #eab308;
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        position: relative;
-        display: inline-block;
-      }
-
-      .member-name::before,
-      .member-name::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        width: 100px;
-        height: 2px;
-        background: #eab308;
-      }
-
-      .member-name::before {
-        left: -120px;
-      }
-
-      .member-name::after {
-        right: -120px;
-      }
-
-      .member-role {
-        color: #848696;
-        font-size: 1.5rem;
-        font-weight: 500;
-        opacity: 0.8;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        padding: 10px 0;
-        margin-top: -15px;
-        position: relative;
-      }
-
-      .dots {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 60px;
-      }
-
-      .dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: rgba(234, 179, 8, 0.2);
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .dot.active {
-        background: #eab308;
-        transform: scale(1.2);
       }
 
       .nav-arrow {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        background: rgba(234, 179, 8, 0.6);
-        color: white;
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
         border-radius: 50%;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        z-index: 100;
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
-        z-index: 20;
-        transition: all 0.3s ease;
-        font-size: 1.5rem;
-        border: none;
-        outline: none;
-        padding-bottom: 4px;
       }
 
       .nav-arrow:hover {
-        background: rgba(234, 179, 8, 0.8);
+        background: rgba(0, 0, 0, 0.8);
         transform: translateY(-50%) scale(1.1);
       }
 
       .nav-arrow.left {
-        left: -150px;
-        padding-right: 3px;
+        left: 20px;
       }
 
       .nav-arrow.right {
-        right: -150px;
-        padding-left: 3px;
+        right: 20px;
       }
 
-      @media (min-width: 1024px) {
-        .nav-arrow.left {
-          left: -150px;
-        }
-
-        .nav-arrow.right {
-          right: -150px;
-        }
+      .member-info {
+        text-align: center;
+        margin-top: 30px;
       }
 
-      @media (max-width: 768px) {
-        .card {
-          width: 280px;
-          height: 275px;
-        }
+      .member-name {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+        transition: opacity 0.3s;
+      }
 
-        .card.left-2 {
-          transform: translateX(-90px) scale(0.8) translateZ(-300px);
-        }
+      .member-role {
+        font-size: 18px;
+        color: #666;
+        margin: 5px 0 0;
+        transition: opacity 0.3s;
+      }
 
-        .card.left-1 {
-          transform: translateX(-50px) scale(0.9) translateZ(-100px);
-        }
+      .dots {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        gap: 10px;
+      }
 
-        .card.right-1 {
-          transform: translateX(50px) scale(0.9) translateZ(-100px);
-        }
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ccc;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+      }
 
-        .card.right-2 {
-          transform: translateX(90px) scale(0.8) translateZ(-300px);
-        }
+      .dot:hover {
+        background: #999;
+        transform: scale(1.2);
+      }
 
-        .member-name {
-          font-size: 2rem;
-        }
-
-        .member-role {
-          font-size: 1.2rem;
-        }
-
-        .member-name::before,
-        .member-name::after {
-          width: 50px;
-        }
-
-        .member-name::before {
-          left: -70px;
-        }
-
-        .member-name::after {
-          right: -70px;
-        }
-
-        .nav-arrow {
-          display: none;
-        }
+      .dot.active {
+        background: #333;
+        transform: scale(1.2);
       }
     `;
-
-    const styleSheet = document.createElement("style");
-    styleSheet.textContent = styles;
-    document.head.appendChild(styleSheet);
   }
 }
