@@ -1,0 +1,213 @@
+:root {
+  --text-color: #ffffff;
+  --background-color: #000000;
+  --card-background: #111111;
+  --accent-color: rgb(234, 179, 8);
+  --transition-speed: 0.5s;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.board-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.board-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-color);
+}
+
+.board-header h2 {
+  font-size: 1.8rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 3rem;
+}
+
+.board-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform var(--transition-speed);
+}
+
+.member-image-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Sun Image Styling */
+.sun-image {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin-bottom: 1rem;
+}
+
+.portrait {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 2;
+  margin: 25px; /* Centers the 170px portrait in the 220px container */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-speed);
+}
+
+/* Rays styling with organic, flame-like rays */
+.rays {
+  position: absolute;
+  top: -25%;
+  left: -25%;
+  right: -25%;
+  bottom: -25%;
+  z-index: 1;
+  animation: rotate 40s linear infinite;
+  filter: drop-shadow(0 0 5px var(--accent-color));
+}
+
+.rays svg {
+  width: 100%;
+  height: 100%;
+}
+
+.rays svg path {
+  fill: var(--accent-color);
+  animation: rayGlow 3s ease-in-out infinite;
+}
+
+@keyframes rayGlow {
+  0% {
+    filter: brightness(1) drop-shadow(0 0 5px var(--accent-color));
+  }
+  50% {
+    filter: brightness(1.3) drop-shadow(0 0 15px var(--accent-color));
+  }
+  100% {
+    filter: brightness(1) drop-shadow(0 0 5px var(--accent-color));
+  }
+}
+
+/* Rotation animation for rays */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Subtle pulsating effect */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+}
+
+.member-info {
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.member-name {
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+}
+
+.member-title {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--accent-color);
+  margin: 0 0 1rem;
+}
+
+.member-bio {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Hover Effects - Enhanced glow and slight scale */
+.board-member:hover .rays::before,
+.board-member:hover .rays::after {
+  animation: pulse 2s ease infinite;
+  opacity: 0.9;
+}
+
+.board-member:hover .portrait {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(234, 179, 8, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .board-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .board-header h2 {
+    font-size: 1.4rem;
+  }
+  
+  .board-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .sun-image {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .portrait {
+    width: 150px;
+    height: 150px;
+    margin: 25px;
+  }
+  
+  .member-bio {
+    font-size: 0.85rem;
+  }
+}
