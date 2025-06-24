@@ -111,7 +111,19 @@
                 <div id="discord-content" class="dropdown-content" role="menu">
                   <a href="https://discord.gg/5XeapVWHVv" class="dropdown-link" role="menuitem">Join Our Community</a>
                 </div>
-            </nav>
+
+              <!-- Contact Us -->
+              <input type="radio" name="dropdown" id="dropdown-contact" class="dropdown-input" aria-expanded="false">
+              <label for="dropdown-contact" class="dropdown-label" role="button" aria-haspopup="true" aria-controls="contact-content">
+                <i class="dropdown-icon fas fa-envelope"></i>
+                <span>Contacting us</span>
+                <div class="arrow" aria-hidden="true"></div>
+              </label>
+              <div id="contact-content" class="dropdown-content" role="menu">
+                <a href="mailto:info@sunstonein.org" class="dropdown-link" role="menuitem">Email: info@sunstonein.org</a>
+                <a href="https://www.facebook.com/sunstoneinclusivitynetwork" class="dropdown-link" role="menuitem">Facebook</a>
+              </div>
+          </nav>
           </div>
         </div>
       </section>
@@ -436,11 +448,18 @@
         transform: rotate(-135deg) scale(1.1);
       }
 
-      /* Set specific heights for each dropdown section */
+      /* Set heights for dropdown sections */
       /* Target only the immediate next dropdown-content after the checked input */
       .dropdown-input:checked + .dropdown-label + .dropdown-content {
-        height: 60px;
+        height: auto;
+        min-height: 60px;
         animation: dropdown-reveal 0.4s ease-out;
+      }
+
+      /* Ensure smooth height transitions */
+      .dropdown-content {
+        transition: height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                    opacity 0.4s ease-out;
       }
       
       @keyframes dropdown-reveal {
@@ -448,11 +467,12 @@
         100% { opacity: 1; transform: translateY(0); }
       }
 
-      /* Special case for groups dropdown which needs more height */
+      /* Special case for groups dropdown */
       #dropdown-groups:checked + .dropdown-label + .dropdown-content {
-        height: 340px;  /* Further increased height for all groups */
+        height: auto;
         z-index: 20;  /* Ensure it stays above other dropdowns */
         margin-bottom: 10px; /* Add margin to prevent overlap */
+        padding-bottom: 5px; /* Add some padding at the bottom */
       }
       
       /* Dropdown container and title */
