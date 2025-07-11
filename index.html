@@ -101,7 +101,19 @@
                   <a href="groups/rock-and-stone.html" class="dropdown-link" role="menuitem">Rock & Stone</a>
                   <a href="groups/sunstone-youth-group.html" class="dropdown-link" role="menuitem">Sunstone Youth Group</a>
                 </div>
-    
+
+                <!-- About Us -->
+                <input type="radio" name="dropdown" id="dropdown-about" class="dropdown-input" aria-expanded="false">
+                <label for="dropdown-about" class="dropdown-label" role="button" aria-haspopup="true" aria-controls="about-content">
+                  <i class="dropdown-icon fas fa-info-circle"></i>
+                  <span>About Us</span>
+                  <div class="arrow" aria-hidden="true"></div>
+                </label>
+                <div id="about-content" class="dropdown-content" role="menu">
+                  <a href="about.html" class="dropdown-link" role="menuitem">About Us</a>
+                  <a href="/board/index.html" class="dropdown-link" role="menuitem">The Board</a>
+                </div>
+
                 <!-- Discord -->
                 <input type="radio" name="dropdown" id="dropdown-discord" class="dropdown-input" aria-expanded="false">
                 <label for="dropdown-discord" class="dropdown-label" role="button" aria-haspopup="true" aria-controls="discord-content">
@@ -129,149 +141,6 @@
         </div>
       </section>
       <div class="h-16"></div> <!-- Additional spacing -->
-      <section class="my-16">
-        <div class="max-w-4xl mx-auto px-4 md:px-8">
-          <div class="mt-8">
-            <div class="py-4">
-              <h2 class="text-2xl md:text-4xl font-bold mt-2 text-yellow-500">
-                <b >Sunstone Inclusivity Network</b>
-              </h2>
-              <p class="mt-4 text-base">
-                At <b>Sunstone Inclusivity Network</b>, we believe true belonging
-                is built by the community, for the community. Our mission is to
-                create intentionally inclusive spaces, events, groups, and
-                clubs throughout Southern Colorado; Where everyone, especially
-                those from marginalized communities, can thrive, connect, and
-                lead.
-              </p>
-              <p class="mt-4 text-base">
-               We center LGBTQ+ individuals, people with disabilities, and
-                communities of color, ensuring that our spaces are not just
-                welcoming but actively designed with equity, accessibility, and
-                intersectionality in mind. We challenge outdated systems of
-                exclusion and build new models of community care, empowerment,
-                and joy.
-              </p>
-              <p class="mt-4 text-base">
-                <b class="text-yellow-500">Sunstone</b> represents resilience,
-                warmth, and illumination. These are values that guide our work as we forge
-                a world where every person in Southern Colorado can show up
-                authentically, be celebrated, and have a voice in shaping the
-                future.
-              </p>
-                <p class="mt-4">
-                  We're not just inclusive. We are <b class="text-yellow-500">transformative</b>
-                </p>
-            </div>
-            <div class="mt-8">
-              <h2 class="text-xl mt-8 font-bold text-yellow-500">
-                What Sets <b>Sunstone Inclusivity Network</b> Apart
-              </h2> <p class="mt-4 text-base">
-                At <b>Sunstone Inclusivity Network</b>, we don't
-                just advocate for marginalized communities; we empower them to
-                lead, build, and reclaim space. Here's what makes us different:
-              </p>
-              <div class="mt-4 space-y-4">
-                <div class="accordion-item">
-                  <button class="w-full text-left py-2 flex justify-between items-center" onclick="toggleAccordion(this)" aria-expanded="false">
-                    <b class="text-yellow-500">1. Built by the Community, for the Community</b>
-                    <i class="fas fa-chevron-down transform transition-transform"></i>
-                  </button>
-                  <div class="accordion-content hidden">
-                    <p class="text-base pb-4">
-                      We don't just invite people to the table, we rebuild the table
-                      entirely; Ensuring that those most impacted by exclusion are
-                      the ones designing and leading our programs, events, and
-                      initiatives.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="accordion-item">
-                  <button class="w-full text-left py-2 flex justify-between items-center" onclick="toggleAccordion(this)" aria-expanded="false">
-                    <b class="text-yellow-500">2. Centering the Most Marginalized</b>
-                    <i class="fas fa-chevron-down transform transition-transform"></i>
-                  </button>
-                  <div class="accordion-content hidden">
-                    <p class="text-base pb-4">
-                      We go beyond surface-level inclusion, prioritizing LGBTQ+
-                      individuals, people with disabilities, and communities of
-                      color, especially those at the intersections of these
-                      identities. Our work actively challenges systemic oppression,
-                      not just addresses its symptoms.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="accordion-item">
-                  <button class="w-full text-left py-2 flex justify-between items-center" onclick="toggleAccordion(this)" aria-expanded="false">
-                    <b class="text-yellow-500">3. Radical Accessibility & Intersectionality</b>
-                    <i class="fas fa-chevron-down transform transition-transform"></i>
-                  </button>
-                  <div class="accordion-content hidden">
-                    <p class="text-base pb-4">
-                      Many organizations promote diversity, but we take it further by
-                      ensuring our spaces are physically, socially, and culturally
-                      accessible. We embrace neurodivergence, disability justice,
-                      decolonization, and community care as central to our mission.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="accordion-item">
-                  <button class="w-full text-left py-2 flex justify-between items-center" onclick="toggleAccordion(this)" aria-expanded="false">
-                    <b class="text-yellow-500">4. Action-Oriented & Solution-Driven</b>
-                    <i class="fas fa-chevron-down transform transition-transform"></i>
-                  </button>
-                  <div class="accordion-content hidden">
-                    <p class="text-base pb-4">
-                      We don't just host discussions, we create real change through
-                      direct support, mutual aid, leadership training, and advocacy
-                      initiatives. We equip individuals and organizations with
-                      tangible tools to dismantle oppressive systems.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="accordion-item">
-                  <button class="w-full text-left py-2 flex justify-between items-center" onclick="toggleAccordion(this)" aria-expanded="false">
-                    <b class="text-yellow-500">5. No Performative Allyship</b>
-                    <i class="fas fa-chevron-down transform transition-transform"></i>
-                  </button>
-                  <div class="accordion-content hidden">
-                    <p class="text-base pb-4">
-                      Many organizations engage in symbolic activism without real
-                      impact. We hold ourselves and others accountable to ongoing,
-                      tangible, and measurable change. Our work is rooted in
-                      solidarity, not saviorism.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="accordion-item">
-                  <button class="w-full text-left py-2 flex justify-between items-center" onclick="toggleAccordion(this)" aria-expanded="false">
-                    <b class="text-yellow-500">6. More Than an Organization—A Movement</b>
-                    <i class="fas fa-chevron-down transform transition-transform"></i>
-                  </button>
-                  <div class="accordion-content hidden">
-                    <p class="text-base pb-4">
-                      <b class="text-yellow-500">Sunstone Inclusivity Network</b>
-                      isn't just about events and programs, it's about shifting
-                      culture in Southern Colorado. We are creating new models of
-                      equity, justice, and belonging that go beyond traditional
-                      non-profit structures.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <p class="mt-4 text-base">
-                We don't just include. We disrupt, reimagine, and rebuild.
-              </p>
-            </div>
-           </div>
-          </div>
-        </div>
-      </section>
       
       <!-- Sponsors Section -->
       <section id="sponsors-section" class="my-16">
