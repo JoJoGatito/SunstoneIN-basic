@@ -1,0 +1,230 @@
+/* Orbiting Sponsors Component */
+:root {
+  --orbit-item-size: 180px;
+  --sponsor-logo-size: 150px; /* New variable for consistent logo sizing */
+}
+
+.orbit {
+  float: left;
+  width: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+.orbit-icon {
+  width: var(--orbit-item-size);
+  height: var(--orbit-item-size);
+  line-height: var(--orbit-item-size);
+  font-size: 1.2em;
+  border-radius: 50%;
+  background: #ccc;
+  color: #fff;
+  text-align: center;
+  display: block;
+}
+
+.orbit-wrap {
+  height: 600px;
+  list-style: none;
+  font-size: 1.3em;
+  position: relative;
+}
+
+.orbit-wrap > li {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.orbit-wrap > li:hover ul {
+  border-width: 2px;
+  border-color: #fff;
+}
+
+.orbit-wrap > li:hover ~ li ul {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.orbit-wrap > li:hover ~ li ul li {
+  opacity: 0.4;
+}
+
+[class^="ring-"] {
+  border: solid 1px rgba(255, 255, 255, 0.8);
+  position: relative;
+  padding: 0;
+  border-radius: 50%;
+  list-style: none;
+  box-sizing: content-box;
+  transition: all 300ms ease-in-out;
+}
+
+[class^="ring-"] li {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--orbit-item-size);
+  height: var(--orbit-item-size);
+  margin: calc(var(--orbit-item-size) / -2);
+  transition: all 300ms ease-in-out;
+}
+
+/* Ring 0 */
+.ring-0 {
+  width: 400px;
+  height: 400px;
+  animation: clockwiseRotate 35s linear infinite;
+}
+
+/* Add counter-rotation to the sponsor item to keep logo upright */
+.ring-0 > li > .sponsor-item img {
+  animation: counterClockwiseRotate 35s linear infinite;
+}
+
+/* Extra rings removed as requested */
+
+/* Position single logo */
+/* Ring 0 */
+.ring-0 > *:nth-child(1) { transform: rotate(0deg) translate(200px) rotate(-0deg); }
+
+/* Add a specific counter-rotation to the logo itself to keep it upright during orbit */
+.ring-0 > *:nth-child(1) .sponsor-logo {
+  animation: counterClockwiseRotate 35s linear infinite;
+  transform-origin: center center;
+}
+
+/* Extra rings positioning removed as requested */
+
+
+.orbit-center {
+  z-index: 5;
+  font-size: 2em;
+  width: 3.6em;  /* Doubled from 1.8em */
+  height: 3.6em; /* Doubled from 1.8em */
+  line-height: 3.6em; /* Doubled from 1.8em */
+  text-align: center;
+  background: transparent;
+  border-radius: 50%;
+  opacity: 1;
+  pointer-events: none;
+  /* Ensure pixel-perfect centering */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Remove any potential sub-pixel rounding errors */
+  transform: translate(-50%, -50%) translateZ(0);
+}
+
+.orbit-center:hover .orbit-center__icon {
+  transform: none;
+}
+
+.orbit-center__icon {
+  transform: none;
+  transition: none;
+  background-image: url('../../assets/images/Icons/sun.webp');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 100%;
+  height: 100%;
+}
+
+
+@keyframes clockwiseRotate {
+  from {
+    transform: rotate(0deg)
+  }
+  to {
+    transform: rotate(360deg)
+  }
+}
+
+@keyframes counterClockwiseRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+/* Sponsor specific styles */
+.sponsor-item {
+  width: var(--orbit-item-size) !important; /* Added !important to override inline styles */
+  height: var(--orbit-item-size) !important; /* Added !important to override inline styles */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute; /* Changed to absolute for proper positioning in orbits */
+  transform-origin: center;
+}
+
+.sponsor-logo {
+  width: var(--sponsor-logo-size) !important; /* Use the new variable with !important */
+  height: var(--sponsor-logo-size) !important; /* Use the new variable with !important */
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.sponsor-logo:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px rgba(234, 179, 8, 0.7));
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  :root {
+    --orbit-item-size: 140px;
+    --sponsor-logo-size: 110px;
+  }
+  
+  .orbit-wrap {
+    height: 450px;
+  }
+  
+  .ring-0 {
+    width: 300px;
+    height: 300px;
+  }
+  
+  /* Adjust the translation distance for the smaller ring */
+  .ring-0 > *:nth-child(1) {
+    transform: rotate(0deg) translate(150px) rotate(-0deg);
+  }
+}
+
+/* Even smaller screens like mobile phones */
+@media (max-width: 480px) {
+  :root {
+    --orbit-item-size: 100px;
+    --sponsor-logo-size: 80px;
+  }
+  
+  .orbit-wrap {
+    height: 350px;
+  }
+  
+  .ring-0 {
+    width: 220px;
+    height: 220px;
+  }
+  
+  /* Adjust the translation distance for the smaller ring */
+  .ring-0 > *:nth-child(1) {
+    transform: rotate(0deg) translate(110px) rotate(-0deg);
+  }
+  
+  /* Adjust the center sun size */
+  .orbit-center {
+    font-size: 1.5em;
+    width: 2.7em;  /* Doubled from original responsive size */
+    height: 2.7em; /* Doubled from original responsive size */
+    line-height: 2.7em; /* Doubled from original responsive size */
+  }
+}
