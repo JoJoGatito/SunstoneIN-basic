@@ -126,9 +126,9 @@
       ]
     },
     {
-      "id": "Hue-House",
+      "id": "hue-house",
       "name": "Hue House",
-      "page": "groups/Hue-House.html",
+      "page": "groups/hue-house.html",
       "events": [
         {
           "_comment": "Add your first POC Group event here when ready",

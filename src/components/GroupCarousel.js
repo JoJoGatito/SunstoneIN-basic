@@ -33,31 +33,31 @@ export class GroupCarousel {
       { 
         name: "Cafeteria Collective", 
         role: "Community Group",
-        image: `${this.baseUrl}/assets/images/cards/Cafeteria card.webp`,
+        image: `${this.baseUrl}/assets/images/cards/cafeteria-card.webp`,
         link: `${this.baseUrl}/groups/cafeteria-collective.html`
       },
       { 
         name: "Disabitch", 
         role: "Community Group",
-        image: `${this.baseUrl}/assets/images/cards/Disabitch card.webp`,
+        image: `${this.baseUrl}/assets/images/cards/disabitch-card.webp`,
         link: `${this.baseUrl}/groups/disabitch.html`
       },
       { 
         name: "Hue House", 
         role: "Community Group",
-        image: `${this.baseUrl}/assets/images/cards/Hue House card.webp`,
-        link: `${this.baseUrl}/groups/Hue-House.html`
+        image: `${this.baseUrl}/assets/images/cards/hue-house-card.webp`,
+        link: `${this.baseUrl}/groups/hue-house.html`
       },
       { 
         name: "Rock & Stone", 
         role: "Community Group",
-        image: `${this.baseUrl}/assets/images/cards/Rock Stone card.webp`,
+        image: `${this.baseUrl}/assets/images/cards/rock-stone-card.webp`,
         link: `${this.baseUrl}/groups/rock-and-stone.html`
       },
       { 
         name: "Sunstone Youth Group", 
         role: "Community Group",
-        image: `${this.baseUrl}/assets/images/cards/SYG card.webp`,
+        image: `${this.baseUrl}/assets/images/cards/syg-card.webp`,
         link: `${this.baseUrl}/groups/sunstone-youth-group.html`
       }
     ];
