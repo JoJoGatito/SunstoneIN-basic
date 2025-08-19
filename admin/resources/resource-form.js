@@ -198,6 +198,10 @@ async function loadResource(id) {
     document.getElementById('resource-description').value = resource.description;
     document.getElementById('resource-active').checked = resource.is_active;
     
+    // Populate location and website
+    document.getElementById('resource-location').value = resource.location || '';
+    document.getElementById('resource-website').value = resource.website || '';
+    
     // Populate contact information
     if (resource.contact) {
       document.getElementById('contact-email').value = resource.contact.email || '';
@@ -232,27 +236,14 @@ async function handleSubmit(event) {
   // Validate required fields
   let hasError = false;
   
+  // Only name and description are required
   if (!name) {
     document.getElementById('name-error').classList.remove('hidden');
     hasError = true;
   }
   
-  if (!categoryId) {
-    document.getElementById('category-error').classList.remove('hidden');
-    hasError = true;
-  }
-  
   if (!description) {
     document.getElementById('description-error').classList.remove('hidden');
-    hasError = true;
-  }
-  
-  // Validate contact information
-  const email = document.getElementById('contact-email').value.trim();
-  const phone = document.getElementById('contact-phone').value.trim();
-  
-  if (!email && !phone) {
-    document.getElementById('contact-error').classList.remove('hidden');
     hasError = true;
   }
   
@@ -268,12 +259,14 @@ async function handleSubmit(event) {
     // Prepare resource data
     const resourceData = {
       name,
-      category_id: categoryId,
+      category_id: categoryId || null,
       description,
       is_active: isActive,
+      location: document.getElementById('resource-location').value.trim() || null,
+      website: document.getElementById('resource-website').value.trim() || null,
       contact: {
-        email: email || null,
-        phone: phone || null
+        email: document.getElementById('contact-email').value.trim() || null,
+        phone: document.getElementById('contact-phone').value.trim() || null
       },
       hours: {
         weekday: document.getElementById('hours-weekday').value.trim() || null,
