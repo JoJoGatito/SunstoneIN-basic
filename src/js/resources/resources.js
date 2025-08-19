@@ -201,7 +201,10 @@ async function displayResources() {
   // Apply category filter
   const filteredResources = currentCategory === 'all'
     ? resources
-    : resources.filter(resource => resource.category === currentCategory);
+    : resources.filter(resource => {
+        // Match string category names instead of numeric IDs
+        return resource.categoryName.toLowerCase().replace(/\s+/g, '-') === currentCategory;
+      });
   
   console.log('Filtered resources:', filteredResources);
 
