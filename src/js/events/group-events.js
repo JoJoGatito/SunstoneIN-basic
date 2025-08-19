@@ -141,20 +141,21 @@ async function loadGroupEvents() {
         const nextEvent = events[0];
 
         if (nextEvent) {
-          let eventContainer = groupCard.querySelector('.group-event-container');
-          if (!eventContainer) {
-            eventContainer = document.createElement('div');
-            eventContainer.className = 'group-event-container';
-            groupCard.appendChild(eventContainer);
+          // Instead of creating a bubble, update the existing card event section if it exists
+          const eventSection = groupCard.closest('.card-group')?.querySelector('.card-group__event');
+          
+          if (eventSection) {
+            const titleEl = eventSection.querySelector('.card-group__event-title');
+            const timeEl = eventSection.querySelector('.card-group__event-time');
+            const locationEl = eventSection.querySelector('.card-group__event-location');
+            
+            const eventDate = new Date(nextEvent.date).toLocaleDateString();
+            
+            // Update the existing card elements instead of creating a bubble
+            if (titleEl) titleEl.textContent = nextEvent.title || 'TBD';
+            if (timeEl) timeEl.textContent = `${eventDate}${nextEvent.time ? ' • ' + nextEvent.time : ''}`;
+            if (locationEl) locationEl.textContent = nextEvent.location || '';
           }
-
-          const eventDate = new Date(nextEvent.date).toLocaleDateString();
-          eventContainer.innerHTML = `
-            <div class="text-sm md:text-base bg-gray-800 p-3 md:p-4 rounded mt-2">
-              <p class="text-yellow-500 font-bold text-base md:text-lg">Next Event: ${nextEvent.title}</p>
-              <p class="mt-1 text-sm md:text-base">${eventDate}${nextEvent.time ? ' • ' + nextEvent.time : ''}</p>
-            </div>
-          `;
         }
       } catch (groupError) {
         console.error(`Error processing group ${group.id}:`, groupError);
@@ -233,19 +234,19 @@ async function fallbackToJson() {
 
       const nextEvent = upcomingEvents[0];
       if (nextEvent) {
-        let eventContainer = groupCard.querySelector('.group-event-container');
-        if (!eventContainer) {
-          eventContainer = document.createElement('div');
-          eventContainer.className = 'group-event-container';
-          groupCard.appendChild(eventContainer);
+        // Instead of creating a bubble, update the existing card event section if it exists
+        const eventSection = groupCard.closest('.card-group')?.querySelector('.card-group__event');
+        
+        if (eventSection) {
+          const titleEl = eventSection.querySelector('.card-group__event-title');
+          const timeEl = eventSection.querySelector('.card-group__event-time');
+          const locationEl = eventSection.querySelector('.card-group__event-location');
+          
+          // Update the existing card elements instead of creating a bubble
+          if (titleEl) titleEl.textContent = nextEvent.title || 'TBD';
+          if (timeEl) timeEl.textContent = `${nextEvent.date}${nextEvent.time ? ' • ' + nextEvent.time : ''}`;
+          if (locationEl) locationEl.textContent = nextEvent.location || '';
         }
-
-        eventContainer.innerHTML = `
-          <div class="text-sm md:text-base bg-gray-800 p-3 md:p-4 rounded mt-2">
-            <p class="text-yellow-500 font-bold text-base md:text-lg">Next Event: ${nextEvent.title}</p>
-            <p class="mt-1 text-sm md:text-base">${nextEvent.date}${nextEvent.time ? ' • ' + nextEvent.time : ''}</p>
-          </div>
-        `;
       }
     });
 
@@ -257,7 +258,15 @@ async function fallbackToJson() {
 }
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', loadGroupEvents);
+document.addEventListener('DOMContentLoaded', () => {
+  // Clean up any existing event bubbles
+  document.querySelectorAll('.group-event-container').forEach(bubble => {
+    bubble.parentNode.removeChild(bubble);
+  });
+  
+  // Load group events
+  loadGroupEvents();
+});
 
 // Set up real-time subscription
 const subscription = supabase

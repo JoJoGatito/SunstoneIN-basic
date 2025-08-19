@@ -11,7 +11,7 @@
     <script src="src/js/config/supabase-config.js"></script>
     <script src="src/js/events/group-events.js"></script>
     <script type="module">
-      import { GroupCarousel } from './src/components/GroupCarousel.js';
+      import { CardGroup } from './src/components/CardGroup.js';
       
       // Wait for Supabase to be initialized
       document.addEventListener('DOMContentLoaded', () => {
@@ -19,13 +19,14 @@
           console.error('Supabase not initialized');
           return;
         }
-        console.log('Initializing GroupCarousel');
-        new GroupCarousel();
+        console.log('Initializing CardGroup');
+        new CardGroup();
       });
     </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://www.dyslexiefont.com/css/dyslexie.css" rel="stylesheet" type="text/css"/>
   <link href="src/components/orbiting-sponsors.css" rel="stylesheet" type="text/css"/>
+  <link href="assets/css/card-group.css?v=2025081501" rel="stylesheet" type="text/css"/>
     <script>
       tailwind.config = {
         theme: {
@@ -46,8 +47,10 @@
     <main>
       <section id="our-groups-section" class="px-4 md:px-8">
         <h2 class="text-5xl md:text-6xl font-bold text-yellow-500 text-center mb-6">Our Current Groups</h2>
-        <div id="carousel-container" class="max-w-4xl mx-auto">
-          <!-- GroupCarousel will inject its content here -->
+        <div id="group-grid-container" class="max-w-4xl mx-auto">
+          <div class="group-grid">
+            <!-- Boxes will be generated dynamically via JavaScript -->
+          </div>
         </div>
 
         <!-- Dropdown Menu -->

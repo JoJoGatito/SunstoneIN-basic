@@ -185,10 +185,25 @@
         // Setup auth listeners for future changes
         window.supabase.auth.onAuthStateChange((event, newSession) => {
           console.log('[Events] Auth event received:', event);
+          console.log('[Events] Session has user?', !!newSession?.user);
+          
           if (event === 'SIGNED_OUT') {
             window.location.href = './auth/login.html';
           } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
             handleAuthStateChange(newSession);
+          }
+        });
+        
+        // Add visibility change handler to refresh session when returning to tab
+        document.addEventListener('visibilitychange', function() {
+          if (document.visibilityState === 'visible') {
+            console.log('[Events] Tab became visible, refreshing session...');
+            window.supabase.auth.getSession().then(({ data }) => {
+              if (data?.session) {
+                console.log('[Events] Refreshed session after tab visibility change');
+                handleAuthStateChange(data.session);
+              }
+            });
           }
         });
         
@@ -217,6 +232,39 @@
       
       if (!initialSessionCheckComplete) {
         console.log('[Events] Ignoring auth state change before initial check complete');
+        return;
+      }
+      
+      // If we have a session but no user, try to get the user from Auth API before redirecting
+      if (session && !session.user) {
+        console.log('[Events] Session exists but no user object found, attempting to retrieve user...');
+        
+        // Don't immediately redirect - instead, make a proper check
+        window.supabase.auth.getUser().then(({ data, error }) => {
+          if (error) {
+            console.error('[Events] Error retrieving user:', error);
+            window.location.href = './auth/login.html';
+            return;
+          }
+          
+          if (data?.user) {
+            console.log('[Events] Successfully retrieved user:', data.user.email);
+            currentUser = data.user;
+            
+            // Update UI for authenticated user
+            document.getElementById('user-email').textContent = currentUser.email;
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('not-authenticated').classList.add('hidden');
+            document.getElementById('events-content').classList.remove('hidden');
+            
+            // Load events data
+            loadEvents();
+          } else {
+            console.log('[Events] No user found after explicit check, redirecting to login...');
+            window.location.href = './auth/login.html';
+          }
+        });
+        
         return;
       }
       
