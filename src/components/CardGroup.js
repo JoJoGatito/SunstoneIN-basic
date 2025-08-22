@@ -49,10 +49,10 @@ export class CardGroup {
           throw testError;
         }
 
-        // Fetch groups - attempt to get fields that may help mapping
+        // Fetch groups - only query columns we know exist in Supabase
         const { data: groups, error: groupsError } = await window.supabase
           .from('groups')
-          .select('id, name, page')
+          .select('id, name')  // Only select id and name which we know exist
           .order('id');
 
         console.log('[CardGroup] Groups query response:', { groups, error: groupsError });
@@ -77,41 +77,60 @@ export class CardGroup {
         // Map events to groups - support several possible linking fields
         const eventMap = {};
         groups.forEach((group) => {
+          // Use our hardcoded group data to fill in missing info from Supabase
+          const groupData = this.groupData.find(g => g.id === group.id);
+          if (!groupData) {
+            console.log('[CardGroup] Group not found in hardcoded data:', group.id);
+            return;
+          }
+          
+          // Create a set of possible key identifiers for this group
           const groupKeyCandidates = new Set();
           if (group.id !== undefined && group.id !== null) groupKeyCandidates.add(String(group.id));
-          if (group.page) {
-            const parts = String(group.page).split('/');
-            const basename = parts[parts.length - 1].replace('.html', '');
-            groupKeyCandidates.add(basename);
-            groupKeyCandidates.add(String(group.page));
-          }
+          
+          // Add standard page path format based on group id
+          const standardPagePath = `groups/${group.id}.html`;
+          groupKeyCandidates.add(standardPagePath);
+          groupKeyCandidates.add(group.id);  // Add id without the HTML extension
 
-          // find featured events for this group
+          // find featured events for this group - log each step
+          console.log('[CardGroup] Looking for featured events for group:', {
+            id: group.id,
+            name: group.name,
+            possibleKeys: Array.from(groupKeyCandidates)
+          });
+          
           const groupEvents = events.filter((ev) => {
             if (!ev) return false;
-            // Log the event to debug
-            console.log('[CardGroup] Checking event for group:', { event: ev, group: group.id });
             
-            // Check various ways events might be linked to groups
+            // Log the event details we're checking
+            console.log('[CardGroup] Checking event for match:', {
+              id: ev.id,
+              title: ev.title,
+              is_featured: ev.is_featured,
+              group_id: ev.group_id
+            });
+            
+            // Primary match: group_id
             if (ev.group_id && groupKeyCandidates.has(String(ev.group_id))) {
-              console.log('[CardGroup] Matched by group_id');
-              return true;
-            }
-            if (ev.group_page && groupKeyCandidates.has(String(ev.group_page))) {
-              console.log('[CardGroup] Matched by group_page');
-              return true;
-            }
-            if (ev.group_name && String(ev.group_name).toLowerCase() === String(group.name).toLowerCase()) {
-              console.log('[CardGroup] Matched by group_name');
+              console.log('[CardGroup] ✅ Matched by group_id');
               return true;
             }
             
-            // Report if we found a slug property but couldn't match
-            if (ev.slug) {
-              console.log('[CardGroup] Event has slug property but no match:', ev.slug);
+            // Secondary matches
+            if (ev.group_name && String(ev.group_name).toLowerCase() === String(group.name).toLowerCase()) {
+              console.log('[CardGroup] ✅ Matched by group_name');
+              return true;
             }
             
             return false;
+          });
+          
+          // Log the results
+          console.log('[CardGroup] Found events for group:', {
+            group_id: group.id,
+            count: groupEvents.length,
+            titles: groupEvents.map(e => e.title)
           });
 
           if (groupEvents.length) {
@@ -181,7 +200,12 @@ export class CardGroup {
   createGridHTML() {
     return `
       ${this.groupData.map(group => {
-        const nextEvent = this.events[group.id];
+        const events = this.events[group.id];
+        // Get the first event if events is an array, otherwise use as is
+        const nextEvent = Array.isArray(events) ? events[0] : events;
+        
+        console.log(`[CardGroup] Rendering ${group.id}:`,
+          nextEvent ? (nextEvent.title || 'Event with no title') : 'No upcoming events');
 
         return `
           <div class="group-box" data-group-id="${this.escapeHtml(group.id)}">
@@ -243,12 +267,66 @@ export class CardGroup {
   }
 
   /**
+   * Helper: format time string to 12-hour format
+   * @param {string} timeStr - Time string to format
+   * @returns {string} Formatted time in 12-hour format
+   */
+  formatTimeToTwelveHour(timeStr) {
+    if (!timeStr) return '';
+    
+    // If already in 12-hour format with AM/PM, return as is
+    if (timeStr.includes('AM') || timeStr.includes('PM')) {
+      return timeStr;
+    }
+    
+    try {
+      let hours, minutes;
+      
+      // Handle ISO timestamp format (contains T or Z)
+      if (timeStr.includes('T') || timeStr.includes('Z')) {
+        const dateObj = new Date(timeStr);
+        if (!isNaN(dateObj.getTime())) {
+          hours = dateObj.getHours();
+          minutes = dateObj.getMinutes();
+        }
+      }
+      // Handle 24-hour time format (HH:MM)
+      else if (timeStr.includes(':')) {
+        const parts = timeStr.split(':');
+        hours = parseInt(parts[0], 10);
+        minutes = parseInt(parts[1], 10);
+      }
+      
+      // If we successfully parsed hours/minutes
+      if (!isNaN(hours) && !isNaN(minutes)) {
+        // Convert to 12-hour format
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+        const displayMinutes = minutes.toString().padStart(2, '0');
+        return `${displayHours}:${displayMinutes} ${period}`;
+      }
+    } catch (e) {
+      console.error('Error formatting time:', e);
+    }
+    
+    // Return original if we couldn't format it
+    return timeStr;
+  }
+
+  /**
    * Helper: format event time (expects start_time/end_time)
    */
   formatEventTime(event) {
     if (!event) return '';
-    const start = event.start_time || event.start || '';
-    const end = event.end_time || event.end || '';
+    
+    // Get start/end times and format them
+    const startRaw = event.start_time || event.start || '';
+    const endRaw = event.end_time || event.end || '';
+    
+    const start = this.formatTimeToTwelveHour(startRaw);
+    const end = this.formatTimeToTwelveHour(endRaw);
+    
+    // Return formatted time string
     if (start && end) return ` — ${this.escapeHtml(start)} - ${this.escapeHtml(end)}`;
     if (start) return ` — ${this.escapeHtml(start)}`;
     return '';

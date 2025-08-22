@@ -46,6 +46,52 @@ function showError(message) {
 }
 
 /**
+ * Formats a time string or timestamp into a clean 12-hour format
+ * @param {string} timeStr - The time string to format (could be "4:00 PM" or a timestamp)
+ * @returns {string} Formatted time string in 12-hour format
+ */
+function formatTimeDisplay(timeStr) {
+  if (!timeStr) return '';
+  
+  // If already in 12-hour format with AM/PM, return as is
+  if (timeStr.includes('AM') || timeStr.includes('PM')) {
+    return timeStr;
+  }
+  
+  try {
+    let hours, minutes;
+    
+    // Handle ISO timestamp format (contains T or Z)
+    if (timeStr.includes('T') || timeStr.includes('Z')) {
+      const dateObj = new Date(timeStr);
+      if (!isNaN(dateObj.getTime())) {
+        hours = dateObj.getHours();
+        minutes = dateObj.getMinutes();
+      }
+    }
+    // Handle 24-hour time format (HH:MM)
+    else if (timeStr.includes(':')) {
+      const parts = timeStr.split(':');
+      hours = parseInt(parts[0], 10);
+      minutes = parseInt(parts[1], 10);
+    }
+    // If we successfully parsed hours/minutes
+    if (!isNaN(hours) && !isNaN(minutes)) {
+      // Convert to 12-hour format
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+      const displayMinutes = minutes.toString().padStart(2, '0');
+      return `${displayHours}:${displayMinutes} ${period}`;
+    }
+  } catch (e) {
+    console.error('Error formatting time:', e);
+  }
+  
+  // Return original if we couldn't format it
+  return timeStr;
+}
+
+/**
  * Loads events from the JSON file as fallback when Supabase is unavailable
  * @returns {Promise<{groups: Group[]}>} The events data grouped by organization
  * @throws {Error} If the JSON file cannot be loaded or is invalid
@@ -88,11 +134,14 @@ async function loadGroupEvents() {
       throw new Error('Supabase not initialized');
     }
 
-    // First get all groups
+    // First get all groups - only select columns we know exist
+    console.log('[group-events] Fetching groups');
     const { data: groups, error: groupsError } = await supabase
       .from('groups')
-      .select('id, name')
+      .select('id, name')  // Only select fields we know exist
       .order('id');
+    
+    console.log('[group-events] Groups response:', { count: groups?.length, error: groupsError?.message });
 
     if (groupsError) throw groupsError;
     if (!groups) throw new Error('No groups found');
@@ -100,31 +149,88 @@ async function loadGroupEvents() {
     // Then get all featured upcoming events
     const today = new Date().toISOString().split('T')[0];
     console.log('[group-events] Fetching featured events with date >=', today);
-    const { data: events, error: eventsError } = await supabase
+    let events, eventsError;
+    
+    const { data: featuredEvents, error: featuredEventsError } = await supabase
       .from('events')
       .select('*')
       .eq('is_featured', true)
       .gte('date', today)
       .order('date', { ascending: true });
+      
+    events = featuredEvents;
+    eventsError = featuredEventsError;
+      
+    console.log('[group-events] Events response:', {
+      count: events?.length,
+      featured: events?.filter(e => e.is_featured).length,
+      error: eventsError?.message
+    });
+    
+    // If no featured events found, try again without the featured filter as fallback
+    if (!events || events.length === 0) {
+      console.log('[group-events] No featured events found, falling back to any upcoming events');
+      const { data: fallbackEvents, error: fallbackError } = await supabase
+        .from('events')
+        .select('*')
+        .gte('date', today)
+        .order('date', { ascending: true })
+        .limit(5);  // Limit to 5 to avoid too many events
+        
+      if (!fallbackError && fallbackEvents && fallbackEvents.length > 0) {
+        console.log('[group-events] Found fallback events:', fallbackEvents.length);
+        // Use fallback events instead
+        events = fallbackEvents;
+        eventsError = fallbackError;
+      }
+    }
 
     if (eventsError) throw eventsError;
     if (!events) throw new Error('No events found');
 
-    // Combine groups with their events
-    const groupsWithEvents = groups.map(group => ({
-      ...group,
-      events: events
-        .filter(event => {
-          console.log('[group-events] Checking featured event:', {
-            id: event.id,
-            title: event.title,
-            group_id: event.group_id,
-            for_group: group.id,
-            is_featured: event.is_featured
-          });
-          return event.group_id === group.id && event.is_featured === true;
-        })
-    }));
+    // Combine groups with their events - handle various ways events might be linked to groups
+    const groupsWithEvents = groups.map(group => {
+      // Log what we're processing
+      console.log('[group-events] Processing group:', { id: group.id, name: group.name });
+      
+      // Find events for this group with more flexible matching
+      const groupEvents = events.filter(event => {
+        if (!event) return false;
+        
+        // Log what we're checking
+        console.log('[group-events] Checking event:', {
+          id: event.id,
+          title: event.title,
+          event_group_id: event.group_id,
+          target_group_id: group.id
+        });
+        
+        // Primary match by group_id
+        if (String(event.group_id) === String(group.id)) {
+          console.log('[group-events] ✅ Matched by group_id');
+          return true;
+        }
+        
+        // Secondary match by group_name
+        if (event.group_name &&
+            String(event.group_name).toLowerCase() === String(group.name).toLowerCase()) {
+          console.log('[group-events] ✅ Matched by group_name');
+          return true;
+        }
+        
+        return false;
+      });
+      
+      console.log('[group-events] Events found for group:', {
+        group_id: group.id,
+        count: groupEvents.length
+      });
+      
+      return {
+        ...group,
+        events: groupEvents
+      };
+    });
 
     // Log successful Supabase query
     queryEndTime = performance.now();
@@ -164,7 +270,11 @@ async function loadGroupEvents() {
             
             // Update the existing card elements instead of creating a bubble
             if (titleEl) titleEl.textContent = nextEvent.title || 'TBD';
-            if (timeEl) timeEl.textContent = `${eventDate}${nextEvent.time ? ' • ' + nextEvent.time : ''}`;
+            // Get the time from either time or start_time field
+            const timeValue = nextEvent.time || nextEvent.start_time || '';
+            const formattedTime = formatTimeDisplay(timeValue);
+            
+            if (timeEl) timeEl.textContent = `${eventDate}${formattedTime ? ' • ' + formattedTime : ''}`;
             if (locationEl) locationEl.textContent = nextEvent.location || '';
           }
         }
@@ -255,7 +365,11 @@ async function fallbackToJson() {
           
           // Update the existing card elements instead of creating a bubble
           if (titleEl) titleEl.textContent = nextEvent.title || 'TBD';
-          if (timeEl) timeEl.textContent = `${nextEvent.date}${nextEvent.time ? ' • ' + nextEvent.time : ''}`;
+          // Get the time from either time or start_time field
+          const timeValue = nextEvent.time || nextEvent.start_time || '';
+          const formattedTime = formatTimeDisplay(timeValue);
+          
+          if (timeEl) timeEl.textContent = `${nextEvent.date}${formattedTime ? ' • ' + formattedTime : ''}`;
           if (locationEl) locationEl.textContent = nextEvent.location || '';
         }
       }
