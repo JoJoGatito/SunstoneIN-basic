@@ -97,11 +97,14 @@ async function loadGroupEvents() {
     if (groupsError) throw groupsError;
     if (!groups) throw new Error('No groups found');
 
-    // Then get all upcoming events
+    // Then get all featured upcoming events
+    const today = new Date().toISOString().split('T')[0];
+    console.log('[group-events] Fetching featured events with date >=', today);
     const { data: events, error: eventsError } = await supabase
       .from('events')
       .select('*')
-      .gte('date', new Date().toISOString().split('T')[0])
+      .eq('is_featured', true)
+      .gte('date', today)
       .order('date', { ascending: true });
 
     if (eventsError) throw eventsError;
@@ -111,8 +114,16 @@ async function loadGroupEvents() {
     const groupsWithEvents = groups.map(group => ({
       ...group,
       events: events
-        .filter(event => event.group_id === group.id)
-        .slice(0, 1) // Get only the next upcoming event
+        .filter(event => {
+          console.log('[group-events] Checking featured event:', {
+            id: event.id,
+            title: event.title,
+            group_id: event.group_id,
+            for_group: group.id,
+            is_featured: event.is_featured
+          });
+          return event.group_id === group.id && event.is_featured === true;
+        })
     }));
 
     // Log successful Supabase query

@@ -52,18 +52,21 @@ export class CardGroup {
         // Fetch groups - attempt to get fields that may help mapping
         const { data: groups, error: groupsError } = await window.supabase
           .from('groups')
-          .select('id, name, slug, page')
+          .select('id, name, page')
           .order('id');
+
+        console.log('[CardGroup] Groups query response:', { groups, error: groupsError });
 
         if (groupsError) {
           throw groupsError;
         }
 
         // Fetch upcoming events (ISO date check)
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T');
         const { data: events, error: eventsError } = await window.supabase
           .from('events')
           .select('*')
+          .eq('is_featured', true)
           .gte('date', today)
           .order('date', { ascending: true });
 
@@ -76,7 +79,6 @@ export class CardGroup {
         groups.forEach((group) => {
           const groupKeyCandidates = new Set();
           if (group.id !== undefined && group.id !== null) groupKeyCandidates.add(String(group.id));
-          if (group.slug) groupKeyCandidates.add(String(group.slug));
           if (group.page) {
             const parts = String(group.page).split('/');
             const basename = parts[parts.length - 1].replace('.html', '');
@@ -84,20 +86,38 @@ export class CardGroup {
             groupKeyCandidates.add(String(group.page));
           }
 
-          // find earliest event for this group
+          // find featured events for this group
           const groupEvents = events.filter((ev) => {
             if (!ev) return false;
-            if (ev.group_id && groupKeyCandidates.has(String(ev.group_id))) return true;
-            if (ev.group_slug && groupKeyCandidates.has(String(ev.group_slug))) return true;
-            if (ev.group_page && groupKeyCandidates.has(String(ev.group_page))) return true;
-            if (ev.group_name && String(ev.group_name).toLowerCase() === String(group.name).toLowerCase()) return true;
+            // Log the event to debug
+            console.log('[CardGroup] Checking event for group:', { event: ev, group: group.id });
+            
+            // Check various ways events might be linked to groups
+            if (ev.group_id && groupKeyCandidates.has(String(ev.group_id))) {
+              console.log('[CardGroup] Matched by group_id');
+              return true;
+            }
+            if (ev.group_page && groupKeyCandidates.has(String(ev.group_page))) {
+              console.log('[CardGroup] Matched by group_page');
+              return true;
+            }
+            if (ev.group_name && String(ev.group_name).toLowerCase() === String(group.name).toLowerCase()) {
+              console.log('[CardGroup] Matched by group_name');
+              return true;
+            }
+            
+            // Report if we found a slug property but couldn't match
+            if (ev.slug) {
+              console.log('[CardGroup] Event has slug property but no match:', ev.slug);
+            }
+            
             return false;
           });
 
           if (groupEvents.length) {
             // take earliest upcoming
-            const key = String(group.id) || group.slug || group.page;
-            eventMap[key] = groupEvents[0];
+            const key = String(group.id) || group.page;
+            eventMap[key] = groupEvents;
           }
         });
 
@@ -125,7 +145,7 @@ export class CardGroup {
       if (json && Array.isArray(json.groups)) {
         json.groups.forEach((group) => {
           if (!group || !group.id) return;
-          const nextEvent = Array.isArray(group.events) && group.events.length ? group.events[0] : null;
+          const nextEvent = Array.isArray(group.events) && group.events.length ? group.events : null;
           if (nextEvent) {
             eventMap[group.id] = nextEvent;
           }
@@ -245,7 +265,7 @@ export class CardGroup {
         case '<': return '&lt;';
         case '>': return '&gt;';
         case '"': return '&quot;';
-        case "'": return '&apos;';
+        case "'": return '&#39;';
         default: return s;
       }
     });

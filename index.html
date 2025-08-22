@@ -9,7 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="src/js/config/github-pages-supabase-fix.js"></script>
     <script src="src/js/config/supabase-config.js"></script>
-    <script src="src/js/events/group-events.js"></script>
     <script type="module">
       import { CardGroup } from './src/components/CardGroup.js';
       
@@ -21,6 +20,11 @@
         }
         console.log('Initializing CardGroup');
         new CardGroup();
+
+        // Now that the cards are created, load the events script
+        const script = document.createElement('script');
+        script.src = 'src/js/events/group-events.js';
+        document.body.appendChild(script);
       });
     </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
